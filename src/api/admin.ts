@@ -171,3 +171,54 @@ export async function deleteProductImage(productId: string, imageId: number): Pr
     method: 'DELETE',
   });
 }
+
+export interface ProductCharacteristic {
+  id: number;
+  productId: string;
+  sizeLengthMm: number | null;
+  sizeWidthMm: number | null;
+  sizeHeightMm: number | null;
+  weightKg: number | null;
+  strengthGrade: string | null;
+  frostResistance: string | null;
+  waterAbsorption: string | null;
+  thermalConductivity: number | null;
+  radiationQuality: string | null;
+  quantityPerPallet: number | null;
+  standard: string | null;
+  color: string | null;
+  brickType: string | null;
+  minimumOrderQuantity: number | null;
+}
+
+export interface SaveProductCharacteristicData {
+  sizeLengthMm?: number | null;
+  sizeWidthMm?: number | null;
+  sizeHeightMm?: number | null;
+  weightKg?: number | null;
+  strengthGrade?: string | null;
+  frostResistance?: string | null;
+  waterAbsorption?: string | null;
+  thermalConductivity?: number | null;
+  radiationQuality?: string | null;
+  quantityPerPallet?: number | null;
+  standard?: string | null;
+  color?: string | null;
+  brickType?: string | null;
+  minimumOrderQuantity?: number | null;
+}
+
+export async function fetchProductCharacteristics(productId: string): Promise<ProductCharacteristic | null> {
+  const url = `${API_BASE}/api/products/${encodeURIComponent(productId)}?includeCharacteristics=true`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch characteristics (${res.status})`);
+  const data = await res.json();
+  return data.characteristics ?? null;
+}
+
+export async function saveProductCharacteristic(productId: string, data: SaveProductCharacteristicData): Promise<void> {
+  await request(`/products/${encodeURIComponent(productId)}/characteristics`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}

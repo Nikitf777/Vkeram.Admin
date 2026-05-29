@@ -24,9 +24,8 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
-
-
 import {
   fetchProduct,
   fetchProductPriceHistory,
@@ -35,8 +34,30 @@ import {
   uploadProductImage,
   deleteProductImage,
   getImageUrl,
+  fetchProductCharacteristics,
+  saveProductCharacteristic,
 } from '../api/admin';
-import type { ProductWithPrice, ProductPriceEntry, ProductImage } from '../api/admin';
+import type { ProductWithPrice, ProductPriceEntry, ProductImage, ProductCharacteristic, SaveProductCharacteristicData } from '../api/admin';
+
+function characteristicLabel(key: string): string {
+  const map: Record<string, string> = {
+    sizeLengthMm: 'Size Length (mm)',
+    sizeWidthMm: 'Size Width (mm)',
+    sizeHeightMm: 'Size Height (mm)',
+    weightKg: 'Weight (kg)',
+    strengthGrade: 'Strength Grade',
+    frostResistance: 'Frost Resistance',
+    waterAbsorption: 'Water Absorption',
+    thermalConductivity: 'Thermal Conductivity (W/mK)',
+    radiationQuality: 'Radiation Quality',
+    quantityPerPallet: 'Quantity per Pallet',
+    standard: 'Standard',
+    color: 'Color',
+    brickType: 'Brick Type',
+    minimumOrderQuantity: 'Min Order Quantity',
+  };
+  return map[key] ?? key;
+}
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -44,6 +65,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<ProductWithPrice | null>(null);
   const [prices, setPrices] = useState<ProductPriceEntry[]>([]);
   const [images, setImages] = useState<ProductImage[]>([]);
+  const [characteristics, setCharacteristics] = useState<ProductCharacteristic | null>(null);
   const [loading, setLoading] = useState(true);
   const [priceDialogOpen, setPriceDialogOpen] = useState(false);
   const [priceInput, setPriceInput] = useState('');
@@ -53,19 +75,24 @@ export default function ProductDetailPage() {
   const [uploading, setUploading] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<ProductImage | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [charDialogOpen, setCharDialogOpen] = useState(false);
+  const [savingChar, setSavingChar] = useState(false);
+  const [charForm, setCharForm] = useState<SaveProductCharacteristicData>({});
 
   const load = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     try {
-      const [productData, priceData, imageData] = await Promise.all([
+      const [productData, priceData, imageData, charData] = await Promise.all([
         fetchProduct(id),
         fetchProductPriceHistory(id),
         fetchProductImages(id),
+        fetchProductCharacteristics(id).catch(() => null),
       ]);
       setProduct(productData);
       setPrices(priceData);
       setImages(imageData);
+      setCharacteristics(charData);
     } catch {
       /* ignore */
     } finally {
@@ -125,8 +152,74 @@ export default function ProductDetailPage() {
     }
   };
 
+  const openCharDialog = () => {
+    setCharForm({
+      sizeLengthMm: characteristics?.sizeLengthMm ?? null,
+      sizeWidthMm: characteristics?.sizeWidthMm ?? null,
+      sizeHeightMm: characteristics?.sizeHeightMm ?? null,
+      weightKg: characteristics?.weightKg ?? null,
+      strengthGrade: characteristics?.strengthGrade ?? null,
+      frostResistance: characteristics?.frostResistance ?? null,
+      waterAbsorption: characteristics?.waterAbsorption ?? null,
+      thermalConductivity: characteristics?.thermalConductivity ?? null,
+      radiationQuality: characteristics?.radiationQuality ?? null,
+      quantityPerPallet: characteristics?.quantityPerPallet ?? null,
+      standard: characteristics?.standard ?? null,
+      color: characteristics?.color ?? null,
+      brickType: characteristics?.brickType ?? null,
+      minimumOrderQuantity: characteristics?.minimumOrderQuantity ?? null,
+    });
+    setCharDialogOpen(true);
+  };
+
+  const handleCharSave = async () => {
+    if (!id) return;
+    setSavingChar(true);
+    try {
+      await saveProductCharacteristic(id, charForm);
+      setCharDialogOpen(false);
+      load();
+    } catch {
+      /* ignore */
+    } finally {
+      setSavingChar(false);
+    }
+  };
+
+  const characteristicFields: { key: keyof SaveProductCharacteristicData; type: 'number' | 'text' }[] = [
+    { key: 'color', type: 'text' },
+    { key: 'brickType', type: 'text' },
+    { key: 'sizeLengthMm', type: 'number' },
+    { key: 'sizeWidthMm', type: 'number' },
+    { key: 'sizeHeightMm', type: 'number' },
+    { key: 'weightKg', type: 'number' },
+    { key: 'strengthGrade', type: 'text' },
+    { key: 'frostResistance', type: 'text' },
+    { key: 'waterAbsorption', type: 'text' },
+    { key: 'thermalConductivity', type: 'number' },
+    { key: 'radiationQuality', type: 'text' },
+    { key: 'quantityPerPallet', type: 'number' },
+    { key: 'minimumOrderQuantity', type: 'number' },
+    { key: 'standard', type: 'text' },
+  ];
+
   if (loading) return <CircularProgress />;
   if (!product) return <Typography>Product not found.</Typography>;
+
+  const displayCharFields: { key: keyof ProductCharacteristic; label: string }[] = [
+    { key: 'color', label: 'Color' },
+    { key: 'brickType', label: 'Brick Type' },
+    { key: 'sizeLengthMm', label: 'Size' },
+    { key: 'weightKg', label: 'Weight (kg)' },
+    { key: 'strengthGrade', label: 'Strength Grade' },
+    { key: 'frostResistance', label: 'Frost Resistance' },
+    { key: 'waterAbsorption', label: 'Water Absorption' },
+    { key: 'thermalConductivity', label: 'Thermal Conductivity (W/mK)' },
+    { key: 'radiationQuality', label: 'Radiation Quality' },
+    { key: 'quantityPerPallet', label: 'Qty per Pallet' },
+    { key: 'minimumOrderQuantity', label: 'Min Order Qty' },
+    { key: 'standard', label: 'Standard' },
+  ];
 
   return (
     <Box>
@@ -193,6 +286,44 @@ export default function ProductDetailPage() {
           </Typography>
         </CardContent>
       </Card>
+
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h6">Characteristics</Typography>
+        <Button variant="outlined" size="small" startIcon={<EditIcon />} onClick={openCharDialog}>
+          {characteristics ? 'Edit' : 'Add'}
+        </Button>
+      </Box>
+
+      {!characteristics ? (
+        <Typography color="text.secondary" sx={{ mb: 4 }}>No characteristics defined.</Typography>
+      ) : (
+        <Card sx={{ mb: 4 }}>
+          <CardContent sx={{ py: 1 }}>
+            <Table size="small">
+              <TableBody>
+                {displayCharFields.map((f) => {
+                  const val = characteristics[f.key];
+                  if (val == null) return null;
+                  const label = f.label || f.key;
+                  const isSize = f.key === 'sizeLengthMm';
+                  return (
+                    <TableRow key={f.key}>
+                      <TableCell sx={{ border: 'none', pl: 1, py: 0.5, color: 'text.secondary', width: 180 }}>
+                        {label}
+                      </TableCell>
+                      <TableCell sx={{ border: 'none', py: 0.5 }}>
+                        {isSize
+                          ? `${characteristics.sizeLengthMm} × ${characteristics.sizeWidthMm} × ${characteristics.sizeHeightMm} mm`
+                          : String(val)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h6">Price History</Typography>
@@ -311,6 +442,37 @@ export default function ProductDetailPage() {
           <Button onClick={() => setDeleteTarget(null)} disabled={deleting}>Cancel</Button>
           <Button variant="contained" color="error" onClick={handleDeleteConfirm} disabled={deleting}>
             {deleting ? 'Deleting…' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={charDialogOpen} onClose={() => { if (!savingChar) setCharDialogOpen(false); }} maxWidth="sm" fullWidth>
+        <DialogTitle>{characteristics ? 'Edit' : 'Add'} Characteristics</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            {characteristicFields.map((f) => (
+              <TextField
+                key={f.key}
+                label={characteristicLabel(f.key)}
+                type={f.type === 'number' ? 'number' : 'text'}
+                value={charForm[f.key] ?? ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setCharForm((prev) => ({
+                    ...prev,
+                    [f.key]: f.type === 'number' ? (val === '' ? null : Number(val)) : (val === '' ? null : val),
+                  }));
+                }}
+                slotProps={f.type === 'number' ? { htmlInput: { min: 0, step: f.key === 'weightKg' ? 0.1 : 1 } } : undefined}
+                fullWidth
+              />
+            ))}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCharDialogOpen(false)} disabled={savingChar}>Cancel</Button>
+          <Button variant="contained" onClick={handleCharSave} disabled={savingChar}>
+            {savingChar ? 'Saving…' : 'Save'}
           </Button>
         </DialogActions>
       </Dialog>
