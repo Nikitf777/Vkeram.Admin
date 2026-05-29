@@ -131,3 +131,43 @@ export async function addProductPrice(productId: string, price: number): Promise
     body: JSON.stringify({ productId, price }),
   });
 }
+
+export interface ProductImage {
+  id: number;
+  productId: string;
+  fileName: string;
+  contentType: string;
+  createdAt: string;
+}
+
+export function getImageUrl(productId: string, imageId: number): string {
+  return `${API_BASE}/api/products/${encodeURIComponent(productId)}/images/${imageId}/file`;
+}
+
+export async function fetchProductImages(productId: string): Promise<ProductImage[]> {
+  const url = `${API_BASE}/api/products/${encodeURIComponent(productId)}/images`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch images (${res.status})`);
+  return res.json();
+}
+
+export async function uploadProductImage(productId: string, file: File): Promise<void> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const key = localStorage.getItem('adminKey');
+  const res = await fetch(`${API_BASE}/api/Admin/products/${encodeURIComponent(productId)}/images`, {
+    method: 'POST',
+    headers: key ? { 'X-Admin-Key': key } : {},
+    body: formData,
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new Error(data?.message || `Upload failed (${res.status})`);
+  }
+}
+
+export async function deleteProductImage(productId: string, imageId: number): Promise<void> {
+  await request(`/products/${encodeURIComponent(productId)}/images/${imageId}`, {
+    method: 'DELETE',
+  });
+}
