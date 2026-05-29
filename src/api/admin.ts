@@ -90,3 +90,44 @@ export async function fetchUserOrders(userId: number): Promise<Order[]> {
   const data = await request<{ success: boolean; orders: Order[] }>(`/users/${userId}/orders`);
   return data.orders;
 }
+
+export interface ProductWithPrice {
+  id: string;
+  name: string;
+  price: number | null;
+}
+
+export interface ProductPriceEntry {
+  id: number;
+  productId: string;
+  price: number;
+  createdAt: string;
+}
+
+export async function fetchProducts(): Promise<ProductWithPrice[]> {
+  const url = `${API_BASE}/api/products`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch products (${res.status})`);
+  return res.json();
+}
+
+export async function fetchProduct(id: string): Promise<ProductWithPrice> {
+  const url = `${API_BASE}/api/products/${encodeURIComponent(id)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch product (${res.status})`);
+  return res.json();
+}
+
+export async function fetchProductPriceHistory(productId: string): Promise<ProductPriceEntry[]> {
+  const data = await request<{ success: boolean; prices: ProductPriceEntry[] }>(
+    `/products/${encodeURIComponent(productId)}/prices`
+  );
+  return data.prices;
+}
+
+export async function addProductPrice(productId: string, price: number): Promise<void> {
+  await request('/product-prices', {
+    method: 'POST',
+    body: JSON.stringify({ productId, price }),
+  });
+}
