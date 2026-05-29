@@ -80,3 +80,8 @@ export async function fetchOrders(): Promise<Order[]> {
   const data = await request<{ success: boolean; orders: Order[] }>('/orders');
   return data.orders;
 }
+
+export async function fetchUser(id: number): Promise<User> {
+  const data = await request<{ success: boolean; user: User }>(`/users/${id}`);
+  return data.user;
+}

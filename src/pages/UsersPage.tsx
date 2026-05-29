@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Paper,
@@ -15,6 +16,7 @@ import { fetchUsers } from '../api/admin';
 import type { User } from '../api/admin';
 
 export default function UsersPage() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
 
   const load = useCallback(async () => {
@@ -48,7 +50,7 @@ export default function UsersPage() {
           </TableHead>
           <TableBody>
             {users.map((u) => (
-              <TableRow key={u.id}>
+              <TableRow key={u.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/users/${u.id}`)}>
                 <TableCell>{u.id}</TableCell>
                 <TableCell>{u.companyName}</TableCell>
                 <TableCell>{u.contactName}</TableCell>
