@@ -7,23 +7,49 @@ import {
   CardContent,
   Chip,
   CircularProgress,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Typography,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { fetchUser } from '../api/admin';
-import type { User } from '../api/admin';
+import { fetchUser, fetchUserOrders } from '../api/admin';
+import type { User, Order } from '../api/admin';
+
+const statusColor: Record<string, 'success' | 'warning' | 'error' | 'info' | 'default'> = {
+  Confirmed: 'success',
+  Unconfirmed: 'warning',
+  Cancelled: 'error',
+  Paid: 'success',
+  PartiallyPaid: 'info',
+  Unpaid: 'warning',
+  Shipped: 'success',
+  PartiallyShipped: 'info',
+  Unshipped: 'warning',
+};
 
 export default function UserDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     try {
-      setUser(await fetchUser(Number(id)));
+      const uid = Number(id);
+      const [userData, ordersData] = await Promise.all([
+        fetchUser(uid),
+        fetchUserOrders(uid),
+      ]);
+      setUser(userData);
+      setOrders(ordersData);
     } catch {
       /* ignore */
     } finally {
@@ -46,7 +72,7 @@ export default function UserDetailPage() {
 
       <Typography variant="h5" sx={{ mb: 3 }}>User #{user.id}</Typography>
 
-      <Card>
+      <Card sx={{ mb: 4 }}>
         <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             <Box>
@@ -78,6 +104,47 @@ export default function UserDetailPage() {
           </Box>
         </CardContent>
       </Card>
+
+      <Typography variant="h6" sx={{ mb: 2 }}>Orders ({orders.length})</Typography>
+
+      {orders.length === 0 ? (
+        <Typography color="text.secondary">No orders yet.</Typography>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Confirmation</TableCell>
+                <TableCell>Payment</TableCell>
+                <TableCell>Shipment</TableCell>
+                <TableCell align="right">Reservations</TableCell>
+                <TableCell align="right">Deliveries</TableCell>
+                <TableCell>Created</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {orders.map((o) => (
+                <TableRow key={o.id}>
+                  <TableCell>{o.id}</TableCell>
+                  <TableCell>
+                    <Chip size="small" label={o.confirmationStatus} color={statusColor[o.confirmationStatus] || 'default'} />
+                  </TableCell>
+                  <TableCell>
+                    <Chip size="small" label={o.paymentStatus} color={statusColor[o.paymentStatus] || 'default'} />
+                  </TableCell>
+                  <TableCell>
+                    <Chip size="small" label={o.shipmentStatus} color={statusColor[o.shipmentStatus] || 'default'} />
+                  </TableCell>
+                  <TableCell align="right">{o.reservationsCount}</TableCell>
+                  <TableCell align="right">{o.deliveriesCount}</TableCell>
+                  <TableCell>{new Date(o.createdAt).toLocaleDateString()}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </Box>
   );
 }
