@@ -120,6 +120,8 @@ export default function UserDetailPage() {
                 <TableCell>Shipment</TableCell>
                 <TableCell align="right">Reservations</TableCell>
                 <TableCell align="right">Deliveries</TableCell>
+                <TableCell align="right">Total Qty</TableCell>
+                <TableCell align="right">Total Price</TableCell>
                 <TableCell>Created</TableCell>
               </TableRow>
             </TableHead>
@@ -138,6 +140,8 @@ export default function UserDetailPage() {
                   </TableCell>
                   <TableCell align="right">{o.reservationsCount}</TableCell>
                   <TableCell align="right">{o.deliveriesCount}</TableCell>
+                  <TableCell align="right">{o.totalQuantity}</TableCell>
+                  <TableCell align="right">{o.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
                   <TableCell>{new Date(o.createdAt).toLocaleDateString()}</TableCell>
                 </TableRow>
               ))}

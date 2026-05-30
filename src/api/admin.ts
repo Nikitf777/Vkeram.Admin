@@ -47,6 +47,8 @@ export interface Order {
   createdAt: string;
   reservationsCount: number;
   deliveriesCount: number;
+  totalPrice: number;
+  totalQuantity: number;
 }
 
 export function setAdminKey(key: string) {
