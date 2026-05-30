@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -205,7 +206,11 @@ export default function InvitesPage() {
                   </TableCell>
                   <TableCell>{new Date(inv.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell>{new Date(inv.expiresAt).toLocaleDateString()}</TableCell>
-                  <TableCell>{inv.usedByUserId ?? '-'}</TableCell>
+                  <TableCell>
+                    {inv.usedByUserId != null
+                      ? <Link to={`/users/${inv.usedByUserId}`} onClick={(e) => e.stopPropagation()}>{inv.usedByCompanyName ?? '-'}</Link>
+                      : '-'}
+                  </TableCell>
                 </TableRow>
               );
             })}

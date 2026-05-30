@@ -21,6 +21,7 @@ export interface Invite {
   isUsed: boolean;
   isRevoked: boolean;
   usedByUserId: number | null;
+  usedByCompanyName: string | null;
   createdAt: string;
   usedAt: string | null;
   expiresAt: string;
