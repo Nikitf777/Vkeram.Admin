@@ -169,11 +169,16 @@ function BreaksCard() {
 
   useEffect(() => { load(); }, [load]);
 
-  const validateBreak = (start: string, end: string): string => {
+  const validateBreak = (start: string, end: string, skipId?: number): string => {
     if (!start || !end) return 'Both start and end times are required.';
     if (start >= end) return 'Start time must be before end time.';
     if (whStart && start <= whStart) return 'Break start must not be earlier than working hours start.';
     if (whEnd && end >= whEnd) return 'Break end must not be later than working hours end.';
+    for (const b of breaks) {
+      if (b.id === skipId) continue;
+      if (start < b.endTime && end > b.startTime) return 'Break overlaps with an existing break.';
+      if (end === b.startTime || start === b.endTime) return 'Breaks must not be directly adjacent to each other.';
+    }
     return '';
   };
 
@@ -190,7 +195,7 @@ function BreaksCard() {
   };
 
   const handleSaveEdit = async (id: number) => {
-    const err = validateBreak(editStart, editEnd);
+    const err = validateBreak(editStart, editEnd, id);
     if (err) { setEditError(err); return; }
     setEditError('');
     try {
@@ -248,7 +253,7 @@ function BreaksCard() {
                             <TextField size="small" type="time" value={editEnd} onChange={(e) => { setEditEnd(e.target.value); setEditError(''); }} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 120 }} error={!!editError} />
                           </TableCell>
                           <TableCell align="right">
-                            <Button size="small" onClick={() => handleSaveEdit(b.id)} disabled={!!validateBreak(editStart, editEnd)}>Save</Button>
+                            <Button size="small" onClick={() => handleSaveEdit(b.id)} disabled={!!validateBreak(editStart, editEnd, b.id)}>Save</Button>
                             <Button size="small" onClick={() => setEditId(null)}>Cancel</Button>
                           </TableCell>
                         </>
