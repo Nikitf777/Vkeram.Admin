@@ -6,14 +6,23 @@ import {
   CardContent,
   Checkbox,
   CircularProgress,
+  Collapse,
   FormControlLabel,
+  IconButton,
   Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from '@mui/material';
+import { KeyboardArrowDown, KeyboardArrowUp, Delete as DeleteIcon } from '@mui/icons-material';
 import {
-  fetchWorkingHours,
-  updateWorkingHours,
+  fetchDefaultWorkingHours,
+  updateDefaultWorkingHours,
   fetchMinimumBookingDays,
   updateMinimumBookingDays,
   fetchMinimumDeliveryDays,
@@ -28,8 +37,12 @@ import {
   updateAllowDelivery,
   fetchReservationDuration,
   updateReservationDuration,
+  fetchBreaks,
+  createBreak,
+  updateBreak,
+  deleteBreak,
 } from '../api/admin';
-import type { WorkingHoursData, DaysSettings } from '../api/admin';
+import type { DefaultWorkingHoursData, DaysSettings, BreakData } from '../api/admin';
 
 interface SettingsItem<T> {
   name: string;
@@ -60,9 +73,9 @@ function useSettingsItem<T>(fetcher: () => Promise<T>, initial: T) {
   return { item, setItem, loading, reload: load };
 }
 
-function WorkingHoursCard() {
+function DefaultWorkingHoursCard() {
   const fetcher = useCallback(async () => {
-    const data = await fetchWorkingHours();
+    const data = await fetchDefaultWorkingHours();
     return { startTime: data.startTime, endTime: data.endTime };
   }, []);
 
@@ -70,7 +83,7 @@ function WorkingHoursCard() {
 
   if (loading) return <CircularProgress size={24} />;
 
-  const setCurrent = (v: WorkingHoursData) => {
+  const setCurrent = (v: DefaultWorkingHoursData) => {
     setItem((prev) => ({
       ...prev,
       current: v,
@@ -81,7 +94,7 @@ function WorkingHoursCard() {
   const handleSave = async () => {
     setItem((prev) => ({ ...prev, saving: true }));
     try {
-      await updateWorkingHours(item.current);
+      await updateDefaultWorkingHours(item.current);
       setItem((prev) => ({ ...prev, original: { ...prev.current }, changed: false }));
     } catch {
       /* ignore */
@@ -97,7 +110,7 @@ function WorkingHoursCard() {
   return (
     <Card>
       <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-        <Typography sx={{ minWidth: 200, fontWeight: 500 }}>Working Hours</Typography>
+        <Typography sx={{ minWidth: 200, fontWeight: 500 }}>Default Working Hours</Typography>
         <TextField
           size="small"
           label="Start"
@@ -124,6 +137,117 @@ function WorkingHoursCard() {
             {item.saving ? 'Saving…' : 'Confirm'}
           </Button>
         </Box>
+      </CardContent>
+    </Card>
+  );
+}
+
+function BreaksCard() {
+  const [breaks, setBreaks] = useState<BreakData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [newStart, setNewStart] = useState('12:00');
+  const [newEnd, setNewEnd] = useState('13:00');
+  const [editId, setEditId] = useState<number | null>(null);
+  const [editStart, setEditStart] = useState('');
+  const [editEnd, setEditEnd] = useState('');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchBreaks();
+      setBreaks(data);
+    } catch { /* ignore */ }
+    finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleAdd = async () => {
+    try {
+      await createBreak({ startTime: newStart, endTime: newEnd });
+      await load();
+      setNewStart('12:00');
+      setNewEnd('13:00');
+    } catch { /* ignore */ }
+  };
+
+  const handleSaveEdit = async (id: number) => {
+    try {
+      await updateBreak(id, { startTime: editStart, endTime: editEnd });
+      setEditId(null);
+      await load();
+    } catch { /* ignore */ }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteBreak(id);
+      await load();
+    } catch { /* ignore */ }
+  };
+
+  if (loading) return <CircularProgress size={24} />;
+
+  return (
+    <Card>
+      <CardContent>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography sx={{ fontWeight: 500 }}>Breaks</Typography>
+          <Box sx={{ flex: 1 }} />
+          <IconButton size="small" onClick={() => setOpen(!open)}>
+            {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+          </IconButton>
+        </Box>
+        <Collapse in={open}>
+          <Box sx={{ display: 'flex', gap: 2, mt: 2, alignItems: 'center' }}>
+            <TextField size="small" label="Start" type="time" value={newStart} onChange={(e) => setNewStart(e.target.value)} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 140 }} />
+            <TextField size="small" label="End" type="time" value={newEnd} onChange={(e) => setNewEnd(e.target.value)} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 140 }} />
+            <Button size="small" variant="contained" onClick={handleAdd}>Add</Button>
+          </Box>
+          {breaks.length > 0 && (
+            <TableContainer sx={{ mt: 2 }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Start</TableCell>
+                    <TableCell>End</TableCell>
+                    <TableCell align="right">Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {breaks.map((b) => (
+                    <TableRow key={b.id}>
+                      {editId === b.id ? (
+                        <>
+                          <TableCell>
+                            <TextField size="small" type="time" value={editStart} onChange={(e) => setEditStart(e.target.value)} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 120 }} />
+                          </TableCell>
+                          <TableCell>
+                            <TextField size="small" type="time" value={editEnd} onChange={(e) => setEditEnd(e.target.value)} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 120 }} />
+                          </TableCell>
+                          <TableCell align="right">
+                            <Button size="small" onClick={() => handleSaveEdit(b.id)}>Save</Button>
+                            <Button size="small" onClick={() => setEditId(null)}>Cancel</Button>
+                          </TableCell>
+                        </>
+                      ) : (
+                        <>
+                          <TableCell>{b.startTime}</TableCell>
+                          <TableCell>{b.endTime}</TableCell>
+                          <TableCell align="right">
+                            <Button size="small" onClick={() => { setEditId(b.id); setEditStart(b.startTime); setEditEnd(b.endTime); }}>Edit</Button>
+                            <IconButton size="small" color="error" onClick={() => handleDelete(b.id)}><DeleteIcon fontSize="small" /></IconButton>
+                          </TableCell>
+                        </>
+                      )}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Collapse>
       </CardContent>
     </Card>
   );
@@ -318,7 +442,8 @@ export default function SettingsPage() {
       <Typography variant="h5" sx={{ mb: 3 }}>Settings</Typography>
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <WorkingHoursCard />
+        <DefaultWorkingHoursCard />
+        <BreaksCard />
 
         <AllowCard
           title="Allow Booking"

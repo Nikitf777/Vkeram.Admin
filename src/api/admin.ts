@@ -272,26 +272,58 @@ export async function saveProductCharacteristic(productId: string, data: SavePro
   });
 }
 
-export interface WorkingHoursData {
+export interface DefaultWorkingHoursData {
   startTime: string;
   endTime: string;
+}
+
+export interface BreakData {
+  id: number;
+  startTime: string;
+  endTime: string;
+}
+
+export async function fetchDefaultWorkingHours(): Promise<DefaultWorkingHoursData & { id: number }> {
+  const data = await request<{ success: boolean; workingHours: { id: number; startTime: string; endTime: string } }>('/default-working-hours');
+  return { id: data.workingHours.id, startTime: data.workingHours.startTime, endTime: data.workingHours.endTime };
+}
+
+export async function updateDefaultWorkingHours(settings: DefaultWorkingHoursData): Promise<void> {
+  await request('/default-working-hours', {
+    method: 'PATCH',
+    body: JSON.stringify(settings),
+  });
+}
+
+export async function fetchBreaks(): Promise<BreakData[]> {
+  const data = await request<{ success: boolean; breaks: BreakData[] }>('/breaks');
+  return data.breaks;
+}
+
+export async function createBreak(settings: DefaultWorkingHoursData): Promise<BreakData> {
+  const data = await request<{ success: boolean; break: BreakData }>('/breaks', {
+    method: 'POST',
+    body: JSON.stringify(settings),
+  });
+  return data.break;
+}
+
+export async function updateBreak(id: number, settings: DefaultWorkingHoursData): Promise<void> {
+  await request(`/breaks/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(settings),
+  });
+}
+
+export async function deleteBreak(id: number): Promise<void> {
+  await request(`/breaks/${id}`, {
+    method: 'DELETE',
+  });
 }
 
 export interface DaysSettings {
   days: number;
   countWorkingDaysOnly: boolean;
-}
-
-export async function fetchWorkingHours(): Promise<WorkingHoursData & { id: number }> {
-  const data = await request<{ success: boolean; workingHours: { id: number; startTime: string; endTime: string } }>('/working-hours');
-  return { id: data.workingHours.id, startTime: data.workingHours.startTime, endTime: data.workingHours.endTime };
-}
-
-export async function updateWorkingHours(settings: WorkingHoursData): Promise<void> {
-  await request('/working-hours', {
-    method: 'PATCH',
-    body: JSON.stringify(settings),
-  });
 }
 
 export async function fetchMinimumBookingDays(): Promise<DaysSettings & { id: number }> {
