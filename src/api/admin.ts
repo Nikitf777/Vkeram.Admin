@@ -292,3 +292,27 @@ export async function updateMaximumDeliveryDays(settings: DaysSettings): Promise
     body: JSON.stringify(settings),
   });
 }
+
+export async function fetchAllowBooking(): Promise<{ id: number; isAllowed: boolean }> {
+  const data = await request<{ success: boolean; allowBooking: { id: number; isAllowed: boolean } }>('/allow-booking');
+  return data.allowBooking;
+}
+
+export async function updateAllowBooking(isAllowed: boolean): Promise<void> {
+  await request('/allow-booking', {
+    method: 'PATCH',
+    body: JSON.stringify({ isAllowed }),
+  });
+}
+
+export async function fetchAllowDelivery(): Promise<{ id: number; isAllowed: boolean }> {
+  const data = await request<{ success: boolean; allowDelivery: { id: number; isAllowed: boolean } }>('/allow-delivery');
+  return data.allowDelivery;
+}
+
+export async function updateAllowDelivery(isAllowed: boolean): Promise<void> {
+  await request('/allow-delivery', {
+    method: 'PATCH',
+    body: JSON.stringify({ isAllowed }),
+  });
+}

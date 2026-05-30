@@ -7,6 +7,7 @@ import {
   Checkbox,
   CircularProgress,
   FormControlLabel,
+  Switch,
   TextField,
   Typography,
 } from '@mui/material';
@@ -21,6 +22,10 @@ import {
   updateMaximumBookingDays,
   fetchMaximumDeliveryDays,
   updateMaximumDeliveryDays,
+  fetchAllowBooking,
+  updateAllowBooking,
+  fetchAllowDelivery,
+  updateAllowDelivery,
 } from '../api/admin';
 import type { WorkingHoursData, DaysSettings } from '../api/admin';
 
@@ -186,6 +191,63 @@ function DaysCard({ title, fetcher, updater }: { title: string; fetcher: () => P
   );
 }
 
+function AllowCard({ title, fetcher, updater }: { title: string; fetcher: () => Promise<boolean>; updater: (v: boolean) => Promise<void> }) {
+  const [original, setOriginal] = useState(true);
+  const [current, setCurrent] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const changed = current !== original;
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const v = await fetcher();
+        setOriginal(v);
+        setCurrent(v);
+      } catch {
+        /* ignore */
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [fetcher]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await updater(current);
+      setOriginal(current);
+    } catch {
+      /* ignore */
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) return <CircularProgress size={24} />;
+
+  return (
+    <Card>
+      <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+        <Typography sx={{ minWidth: 200, fontWeight: 500 }}>{title}</Typography>
+        <FormControlLabel
+          control={<Switch checked={current} onChange={(e) => setCurrent(e.target.checked)} />}
+          label={current ? 'Allowed' : 'Not allowed'}
+        />
+        <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
+          <Button size="small" variant="outlined" onClick={() => setCurrent(original)} disabled={!changed || saving}>
+            Cancel
+          </Button>
+          <Button size="small" variant="contained" onClick={handleSave} disabled={!changed || saving}>
+            {saving ? 'Saving…' : 'Confirm'}
+          </Button>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function SettingsPage() {
   return (
     <Box>
@@ -193,6 +255,18 @@ export default function SettingsPage() {
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <WorkingHoursCard />
+
+        <AllowCard
+          title="Allow Booking"
+          fetcher={useCallback(async () => { const d = await fetchAllowBooking(); return d.isAllowed; }, [])}
+          updater={useCallback(async (v: boolean) => { await updateAllowBooking(v); }, [])}
+        />
+
+        <AllowCard
+          title="Allow Delivery"
+          fetcher={useCallback(async () => { const d = await fetchAllowDelivery(); return d.isAllowed; }, [])}
+          updater={useCallback(async (v: boolean) => { await updateAllowDelivery(v); }, [])}
+        />
 
         <DaysCard
           title="Minimum Booking Days"
