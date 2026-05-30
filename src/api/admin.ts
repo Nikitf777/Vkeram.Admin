@@ -268,3 +268,27 @@ export async function updateMinimumDeliveryDays(settings: DaysSettings): Promise
     body: JSON.stringify(settings),
   });
 }
+
+export async function fetchMaximumBookingDays(): Promise<DaysSettings & { id: number }> {
+  const data = await request<{ success: boolean; maximumBookingDays: { id: number; days: number; countWorkingDaysOnly: boolean } }>('/maximum-booking-days');
+  return { id: data.maximumBookingDays.id, days: data.maximumBookingDays.days, countWorkingDaysOnly: data.maximumBookingDays.countWorkingDaysOnly };
+}
+
+export async function updateMaximumBookingDays(settings: DaysSettings): Promise<void> {
+  await request('/maximum-booking-days', {
+    method: 'PATCH',
+    body: JSON.stringify(settings),
+  });
+}
+
+export async function fetchMaximumDeliveryDays(): Promise<DaysSettings & { id: number }> {
+  const data = await request<{ success: boolean; maximumDeliveryDays: { id: number; days: number; countWorkingDaysOnly: boolean } }>('/maximum-delivery-days');
+  return { id: data.maximumDeliveryDays.id, days: data.maximumDeliveryDays.days, countWorkingDaysOnly: data.maximumDeliveryDays.countWorkingDaysOnly };
+}
+
+export async function updateMaximumDeliveryDays(settings: DaysSettings): Promise<void> {
+  await request('/maximum-delivery-days', {
+    method: 'PATCH',
+    body: JSON.stringify(settings),
+  });
+}

@@ -17,6 +17,10 @@ import {
   updateMinimumBookingDays,
   fetchMinimumDeliveryDays,
   updateMinimumDeliveryDays,
+  fetchMaximumBookingDays,
+  updateMaximumBookingDays,
+  fetchMaximumDeliveryDays,
+  updateMaximumDeliveryDays,
 } from '../api/admin';
 import type { WorkingHoursData, DaysSettings } from '../api/admin';
 
@@ -206,6 +210,24 @@ export default function SettingsPage() {
             return { days: d.days, countWorkingDaysOnly: d.countWorkingDaysOnly };
           }, [])}
           updater={useCallback(async (s: DaysSettings) => { await updateMinimumDeliveryDays(s); }, [])}
+        />
+
+        <DaysCard
+          title="Maximum Booking Days"
+          fetcher={useCallback(async () => {
+            const d = await fetchMaximumBookingDays();
+            return { days: d.days, countWorkingDaysOnly: d.countWorkingDaysOnly };
+          }, [])}
+          updater={useCallback(async (s: DaysSettings) => { await updateMaximumBookingDays(s); }, [])}
+        />
+
+        <DaysCard
+          title="Maximum Delivery Days"
+          fetcher={useCallback(async () => {
+            const d = await fetchMaximumDeliveryDays();
+            return { days: d.days, countWorkingDaysOnly: d.countWorkingDaysOnly };
+          }, [])}
+          updater={useCallback(async (s: DaysSettings) => { await updateMaximumDeliveryDays(s); }, [])}
         />
       </Box>
     </Box>
