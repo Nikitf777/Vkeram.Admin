@@ -151,19 +151,36 @@ function BreaksCard() {
   const [editId, setEditId] = useState<number | null>(null);
   const [editStart, setEditStart] = useState('');
   const [editEnd, setEditEnd] = useState('');
+  const [addError, setAddError] = useState('');
+  const [editError, setEditError] = useState('');
+  const [whStart, setWhStart] = useState('');
+  const [whEnd, setWhEnd] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await fetchBreaks();
+      const [data, wh] = await Promise.all([fetchBreaks(), fetchDefaultWorkingHours()]);
       setBreaks(data);
+      setWhStart(wh.startTime);
+      setWhEnd(wh.endTime);
     } catch { /* ignore */ }
     finally { setLoading(false); }
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
+  const validateBreak = (start: string, end: string): string => {
+    if (!start || !end) return 'Both start and end times are required.';
+    if (start >= end) return 'Start time must be before end time.';
+    if (whStart && start <= whStart) return 'Break start must not be earlier than working hours start.';
+    if (whEnd && end >= whEnd) return 'Break end must not be later than working hours end.';
+    return '';
+  };
+
   const handleAdd = async () => {
+    const err = validateBreak(newStart, newEnd);
+    if (err) { setAddError(err); return; }
+    setAddError('');
     try {
       await createBreak({ startTime: newStart, endTime: newEnd });
       await load();
@@ -173,6 +190,9 @@ function BreaksCard() {
   };
 
   const handleSaveEdit = async (id: number) => {
+    const err = validateBreak(editStart, editEnd);
+    if (err) { setEditError(err); return; }
+    setEditError('');
     try {
       await updateBreak(id, { startTime: editStart, endTime: editEnd });
       setEditId(null);
@@ -200,11 +220,12 @@ function BreaksCard() {
           </IconButton>
         </Box>
         <Collapse in={open}>
-          <Box sx={{ display: 'flex', gap: 2, mt: 2, alignItems: 'center' }}>
-            <TextField size="small" label="Start" type="time" value={newStart} onChange={(e) => setNewStart(e.target.value)} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 140 }} />
-            <TextField size="small" label="End" type="time" value={newEnd} onChange={(e) => setNewEnd(e.target.value)} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 140 }} />
-            <Button size="small" variant="contained" onClick={handleAdd}>Add</Button>
+          <Box sx={{ display: 'flex', gap: 2, mt: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+            <TextField size="small" label="Start" type="time" value={newStart} onChange={(e) => { setNewStart(e.target.value); setAddError(''); }} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 140 }} error={!!addError} />
+            <TextField size="small" label="End" type="time" value={newEnd} onChange={(e) => { setNewEnd(e.target.value); setAddError(''); }} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 140 }} error={!!addError} />
+            <Button size="small" variant="contained" onClick={handleAdd} disabled={!!validateBreak(newStart, newEnd)}>Add</Button>
           </Box>
+          {addError && <Typography color="error" variant="caption" sx={{ mt: 1, display: 'block' }}>{addError}</Typography>}
           {breaks.length > 0 && (
             <TableContainer sx={{ mt: 2 }}>
               <Table size="small">
@@ -221,13 +242,13 @@ function BreaksCard() {
                       {editId === b.id ? (
                         <>
                           <TableCell>
-                            <TextField size="small" type="time" value={editStart} onChange={(e) => setEditStart(e.target.value)} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 120 }} />
+                            <TextField size="small" type="time" value={editStart} onChange={(e) => { setEditStart(e.target.value); setEditError(''); }} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 120 }} error={!!editError} />
                           </TableCell>
                           <TableCell>
-                            <TextField size="small" type="time" value={editEnd} onChange={(e) => setEditEnd(e.target.value)} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 120 }} />
+                            <TextField size="small" type="time" value={editEnd} onChange={(e) => { setEditEnd(e.target.value); setEditError(''); }} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 120 }} error={!!editError} />
                           </TableCell>
                           <TableCell align="right">
-                            <Button size="small" onClick={() => handleSaveEdit(b.id)}>Save</Button>
+                            <Button size="small" onClick={() => handleSaveEdit(b.id)} disabled={!!validateBreak(editStart, editEnd)}>Save</Button>
                             <Button size="small" onClick={() => setEditId(null)}>Cancel</Button>
                           </TableCell>
                         </>
@@ -236,7 +257,7 @@ function BreaksCard() {
                           <TableCell>{b.startTime}</TableCell>
                           <TableCell>{b.endTime}</TableCell>
                           <TableCell align="right">
-                            <Button size="small" onClick={() => { setEditId(b.id); setEditStart(b.startTime); setEditEnd(b.endTime); }}>Edit</Button>
+                            <Button size="small" onClick={() => { setEditId(b.id); setEditStart(b.startTime); setEditEnd(b.endTime); setEditError(''); }}>Edit</Button>
                             <IconButton size="small" color="error" onClick={() => handleDelete(b.id)}><DeleteIcon fontSize="small" /></IconButton>
                           </TableCell>
                         </>
@@ -247,6 +268,7 @@ function BreaksCard() {
               </Table>
             </TableContainer>
           )}
+          {editError && <Typography color="error" variant="caption" sx={{ mt: 1, display: 'block' }}>{editError}</Typography>}
         </Collapse>
       </CardContent>
     </Card>
