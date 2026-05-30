@@ -127,7 +127,12 @@ export default function UserDetailPage() {
             </TableHead>
             <TableBody>
               {orders.map((o) => (
-                <TableRow key={o.id}>
+                <TableRow
+                  key={o.id}
+                  hover
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() => navigate(`/orders/${o.id}`)}
+                >
                   <TableCell>{o.id}</TableCell>
                   <TableCell>
                     <Chip size="small" label={o.confirmationStatus} color={statusColor[o.confirmationStatus] || 'default'} />

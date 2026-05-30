@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Chip,
@@ -27,6 +28,7 @@ const statusColor: Record<string, 'success' | 'warning' | 'error' | 'info' | 'de
 };
 
 export default function OrdersPage() {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
 
   const load = useCallback(async () => {
@@ -64,7 +66,12 @@ export default function OrdersPage() {
           </TableHead>
           <TableBody>
             {orders.map((o) => (
-              <TableRow key={o.id}>
+              <TableRow
+                key={o.id}
+                hover
+                sx={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/orders/${o.id}`)}
+              >
                 <TableCell>{o.id}</TableCell>
                 <TableCell>{o.userCompany}</TableCell>
                 <TableCell>{o.userEmail}</TableCell>

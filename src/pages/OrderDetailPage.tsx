@@ -1,0 +1,145 @@
+import { useEffect, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { fetchOrderDetail, type OrderDetail } from '../api/admin'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import Chip from '@mui/material/Chip'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Button from '@mui/material/Button'
+import Skeleton from '@mui/material/Skeleton'
+import Alert from '@mui/material/Alert'
+
+const statusColor: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info'> = {
+  Confirmed: 'success',
+  Unconfirmed: 'warning',
+  Cancelled: 'error',
+  Paid: 'success',
+  PartiallyPaid: 'info',
+  Unpaid: 'warning',
+  Shipped: 'success',
+  PartiallyShipped: 'info',
+  Unshipped: 'warning',
+}
+
+export default function OrderDetailPage() {
+  const { orderId } = useParams<{ orderId: string }>()
+  const navigate = useNavigate()
+  const [order, setOrder] = useState<OrderDetail | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!orderId) return
+    fetchOrderDetail(Number(orderId))
+      .then(setOrder)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false))
+  }, [orderId])
+
+  if (loading) return <Skeleton variant="rectangular" height={400} />
+  if (error) return <Alert severity="error">{error}</Alert>
+  if (!order) return null
+
+  return (
+    <Box>
+      <Button onClick={() => navigate(-1)} sx={{ mb: 2 }}>&larr; Back</Button>
+      <Paper sx={{ p: 3, mb: 2 }}>
+        <Typography variant="h5" gutterBottom>Order #{order.orderId}</Typography>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
+          <Chip label={`Confirmation: ${order.confirmationStatus}`} color={statusColor[order.confirmationStatus ?? ''] || 'default'} />
+          <Chip label={`Payment: ${order.paymentStatus}`} color={statusColor[order.paymentStatus ?? ''] || 'default'} />
+          <Chip label={`Shipment: ${order.shipmentStatus}`} color={statusColor[order.shipmentStatus ?? ''] || 'default'} />
+        </Box>
+        <Typography variant="body2" color="text.secondary">
+          Created: {order.createdAt ? new Date(order.createdAt).toLocaleString() : '-'}
+        </Typography>
+        <Typography variant="body2">
+          User ID: {order.userId}
+        </Typography>
+        <Typography variant="body2">
+          Total: {order.totalQuantity} items for {order.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+        </Typography>
+      </Paper>
+
+      {order.reservations && order.reservations.length > 0 && (
+        <Paper sx={{ p: 2, mb: 2 }}>
+          <Typography variant="h6" gutterBottom>Reservations</Typography>
+          {order.reservations.map((r, i) => (
+            <Box key={i} sx={{ mb: 2 }}>
+              <Typography variant="subtitle2">
+                Slot {i + 1}: {new Date(r.startTime).toLocaleString()} - {new Date(r.endTime).toLocaleString()}
+              </Typography>
+              {r.products && r.products.length > 0 && (
+                <TableContainer>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Product</TableCell>
+                        <TableCell align="right">Qty</TableCell>
+                        <TableCell align="right">Price</TableCell>
+                        <TableCell align="right">Total</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {r.products.map((p, j) => (
+                        <TableRow key={j}>
+                          <TableCell>{p.productName}</TableCell>
+                          <TableCell align="right">{p.quantity}</TableCell>
+                          <TableCell align="right">{p.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
+                          <TableCell align="right">{p.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            </Box>
+          ))}
+        </Paper>
+      )}
+
+      {order.deliveries && order.deliveries.length > 0 && (
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom>Deliveries</Typography>
+          {order.deliveries.map((d, i) => (
+            <Box key={i} sx={{ mb: 2 }}>
+              <Typography variant="subtitle2">
+                Delivery {i + 1}: {new Date(d.deliveryTime).toLocaleString()}
+              </Typography>
+              {d.products && d.products.length > 0 && (
+                <TableContainer>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Product</TableCell>
+                        <TableCell align="right">Qty</TableCell>
+                        <TableCell align="right">Price</TableCell>
+                        <TableCell align="right">Total</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {d.products.map((p, j) => (
+                        <TableRow key={j}>
+                          <TableCell>{p.productName}</TableCell>
+                          <TableCell align="right">{p.quantity}</TableCell>
+                          <TableCell align="right">{p.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
+                          <TableCell align="right">{p.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            </Box>
+          ))}
+        </Paper>
+      )}
+    </Box>
+  )
+}

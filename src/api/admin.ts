@@ -51,6 +51,40 @@ export interface Order {
   totalQuantity: number;
 }
 
+export interface ProductReservationInfo {
+  productId: string;
+  productName: string;
+  quantity: number;
+  price: number;
+  totalPrice: number;
+}
+
+export interface ReservationInfo {
+  startTime: string;
+  endTime: string;
+  products?: ProductReservationInfo[] | null;
+}
+
+export interface DeliveryInfo {
+  deliveryTime: string;
+  products?: ProductReservationInfo[] | null;
+}
+
+export interface OrderDetail {
+  success: boolean;
+  message: string;
+  orderId: number;
+  confirmationStatus: string | null;
+  paymentStatus: string | null;
+  shipmentStatus: string | null;
+  userId: number | null;
+  createdAt: string | null;
+  reservations?: ReservationInfo[] | null;
+  deliveries?: DeliveryInfo[] | null;
+  totalPrice: number;
+  totalQuantity: number;
+}
+
 export function setAdminKey(key: string) {
   localStorage.setItem('adminKey', key);
 }
@@ -90,6 +124,10 @@ export async function fetchUsers(): Promise<User[]> {
 export async function fetchOrders(): Promise<Order[]> {
   const data = await request<{ success: boolean; orders: Order[] }>('/orders');
   return data.orders;
+}
+
+export async function fetchOrderDetail(orderId: number): Promise<OrderDetail> {
+  return request<OrderDetail>(`/orders/${orderId}`);
 }
 
 export async function fetchUser(id: number): Promise<User> {
