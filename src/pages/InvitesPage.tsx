@@ -115,10 +115,11 @@ export default function InvitesPage() {
   };
 
   const toggleAll = () => {
-    if (selected.size === invites.length) {
+    const selectableIds = invites.filter((i) => !i.isUsed && !i.isRevoked).map((i) => i.id);
+    if (selected.size === selectableIds.length) {
       setSelected(new Set());
     } else {
-      setSelected(new Set(invites.map((i) => i.id)));
+      setSelected(new Set(selectableIds));
     }
   };
 
@@ -134,6 +135,9 @@ export default function InvitesPage() {
   };
 
   const canRevoke = invites.some((i) => selected.has(i.id) && !i.isUsed && !i.isRevoked);
+  const selectableIds = invites.filter((i) => !i.isUsed && !i.isRevoked).map((i) => i.id);
+  const allSelected = selectableIds.length > 0 && selected.size === selectableIds.length;
+  const someSelected = selected.size > 0 && selected.size < selectableIds.length;
 
   return (
     <Box>
@@ -157,8 +161,8 @@ export default function InvitesPage() {
             <TableRow>
               <TableCell padding="checkbox">
                 <Checkbox
-                  indeterminate={selected.size > 0 && selected.size < invites.length}
-                  checked={invites.length > 0 && selected.size === invites.length}
+                  indeterminate={someSelected}
+                  checked={allSelected}
                   onChange={toggleAll}
                 />
               </TableCell>
