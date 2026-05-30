@@ -365,3 +365,15 @@ export async function updateAllowDelivery(isAllowed: boolean): Promise<void> {
     body: JSON.stringify({ isAllowed }),
   });
 }
+
+export async function fetchReservationDuration(): Promise<{ id: number; durationMinutes: number }> {
+  const data = await request<{ success: boolean; reservationDuration: { id: number; durationMinutes: number } }>('/reservation-duration');
+  return data.reservationDuration;
+}
+
+export async function updateReservationDuration(durationMinutes: number): Promise<void> {
+  await request('/reservation-duration', {
+    method: 'PATCH',
+    body: JSON.stringify({ durationMinutes }),
+  });
+}

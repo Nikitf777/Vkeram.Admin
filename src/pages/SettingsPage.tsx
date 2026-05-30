@@ -26,6 +26,8 @@ import {
   updateAllowBooking,
   fetchAllowDelivery,
   updateAllowDelivery,
+  fetchReservationDuration,
+  updateReservationDuration,
 } from '../api/admin';
 import type { WorkingHoursData, DaysSettings } from '../api/admin';
 
@@ -248,6 +250,68 @@ function AllowCard({ title, fetcher, updater }: { title: string; fetcher: () => 
   );
 }
 
+function DurationCard({ title, fetcher, updater }: { title: string; fetcher: () => Promise<number>; updater: (v: number) => Promise<void> }) {
+  const [original, setOriginal] = useState(30);
+  const [current, setCurrent] = useState(30);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const changed = current !== original;
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const v = await fetcher();
+        setOriginal(v);
+        setCurrent(v);
+      } catch {
+        /* ignore */
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [fetcher]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await updater(current);
+      setOriginal(current);
+    } catch {
+      /* ignore */
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) return <CircularProgress size={24} />;
+
+  return (
+    <Card>
+      <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+        <Typography sx={{ minWidth: 200, fontWeight: 500 }}>{title}</Typography>
+        <TextField
+          size="small"
+          label="Minutes"
+          type="number"
+          value={current}
+          onChange={(e) => setCurrent(Math.max(1, Math.min(480, parseInt(e.target.value) || 1)))}
+          slotProps={{ htmlInput: { min: 1, max: 480 } }}
+          sx={{ width: 100 }}
+        />
+        <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
+          <Button size="small" variant="outlined" onClick={() => setCurrent(original)} disabled={!changed || saving}>
+            Cancel
+          </Button>
+          <Button size="small" variant="contained" onClick={handleSave} disabled={!changed || saving}>
+            {saving ? 'Saving…' : 'Confirm'}
+          </Button>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function SettingsPage() {
   return (
     <Box>
@@ -266,6 +330,12 @@ export default function SettingsPage() {
           title="Allow Delivery"
           fetcher={useCallback(async () => { const d = await fetchAllowDelivery(); return d.isAllowed; }, [])}
           updater={useCallback(async (v: boolean) => { await updateAllowDelivery(v); }, [])}
+        />
+
+        <DurationCard
+          title="Reservation Duration"
+          fetcher={useCallback(async () => { const d = await fetchReservationDuration(); return d.durationMinutes; }, [])}
+          updater={useCallback(async (v: number) => { await updateReservationDuration(v); }, [])}
         />
 
         <DaysCard
