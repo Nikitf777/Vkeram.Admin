@@ -20,6 +20,7 @@ import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 import PeopleIcon from '@mui/icons-material/People';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { getAdminKey, setAdminKey } from '../api/admin';
 
 const DRAWER_WIDTH = 260;
@@ -29,6 +30,7 @@ const navItems = [
   { label: 'Users', path: '/users', icon: <PeopleIcon /> },
   { label: 'Orders', path: '/orders', icon: <ReceiptIcon /> },
   { label: 'Products', path: '/products', icon: <InventoryIcon /> },
+  { label: 'Settings', path: '/settings', icon: <SettingsIcon /> },
 ];
 
 export default function Layout() {

@@ -222,3 +222,49 @@ export async function saveProductCharacteristic(productId: string, data: SavePro
     body: JSON.stringify(data),
   });
 }
+
+export interface WorkingHoursData {
+  startTime: string;
+  endTime: string;
+}
+
+export interface DaysSettings {
+  days: number;
+  countWorkingDaysOnly: boolean;
+}
+
+export async function fetchWorkingHours(): Promise<WorkingHoursData & { id: number }> {
+  const data = await request<{ success: boolean; workingHours: { id: number; startTime: string; endTime: string } }>('/working-hours');
+  return { id: data.workingHours.id, startTime: data.workingHours.startTime, endTime: data.workingHours.endTime };
+}
+
+export async function updateWorkingHours(settings: WorkingHoursData): Promise<void> {
+  await request('/working-hours', {
+    method: 'PATCH',
+    body: JSON.stringify(settings),
+  });
+}
+
+export async function fetchMinimumBookingDays(): Promise<DaysSettings & { id: number }> {
+  const data = await request<{ success: boolean; minimumBookingDays: { id: number; days: number; countWorkingDaysOnly: boolean } }>('/minimum-booking-days');
+  return { id: data.minimumBookingDays.id, days: data.minimumBookingDays.days, countWorkingDaysOnly: data.minimumBookingDays.countWorkingDaysOnly };
+}
+
+export async function updateMinimumBookingDays(settings: DaysSettings): Promise<void> {
+  await request('/minimum-booking-days', {
+    method: 'PATCH',
+    body: JSON.stringify(settings),
+  });
+}
+
+export async function fetchMinimumDeliveryDays(): Promise<DaysSettings & { id: number }> {
+  const data = await request<{ success: boolean; minimumDeliveryDays: { id: number; days: number; countWorkingDaysOnly: boolean } }>('/minimum-delivery-days');
+  return { id: data.minimumDeliveryDays.id, days: data.minimumDeliveryDays.days, countWorkingDaysOnly: data.minimumDeliveryDays.countWorkingDaysOnly };
+}
+
+export async function updateMinimumDeliveryDays(settings: DaysSettings): Promise<void> {
+  await request('/minimum-delivery-days', {
+    method: 'PATCH',
+    body: JSON.stringify(settings),
+  });
+}

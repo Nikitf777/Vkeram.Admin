@@ -6,6 +6,7 @@ import UserDetailPage from './pages/UserDetailPage';
 import OrdersPage from './pages/OrdersPage';
 import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
+import SettingsPage from './pages/SettingsPage';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/invites" replace />} />
         </Route>
       </Routes>
