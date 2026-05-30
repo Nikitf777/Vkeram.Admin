@@ -1,12 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Box,
   Button,
+  Checkbox,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
+  Paper,
   Table,
   TableBody,
   TableCell,
@@ -15,16 +18,16 @@ import {
   TableRow,
   TextField,
   Typography,
-  Chip,
-  Paper,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { fetchInvites, createInvite } from '../api/admin';
+import { fetchInvites, createInvite, revokeInvites } from '../api/admin';
 import type { Invite } from '../api/admin';
 
 export default function InvitesPage() {
   const [invites, setInvites] = useState<Invite[]>([]);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const lastClickedRef = useRef<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [count, setCount] = useState(5);
   const [companyName, setCompanyName] = useState('');
@@ -60,19 +63,105 @@ export default function InvitesPage() {
     }
   };
 
+  const handleRowClick = (id: number, disabled: boolean, event: React.MouseEvent) => {
+    if (disabled) return;
+
+    if (event.shiftKey && lastClickedRef.current !== null) {
+      const ids = invites.map((i) => i.id);
+      const currentIdx = ids.indexOf(id);
+      const lastIdx = ids.indexOf(lastClickedRef.current);
+      if (currentIdx !== -1 && lastIdx !== -1) {
+        const start = Math.min(currentIdx, lastIdx);
+        const end = Math.max(currentIdx, lastIdx);
+        const range = ids.slice(start, end + 1);
+        setSelected((prev) => {
+          const next = new Set(prev);
+          for (const r of range) {
+            const inv = invites.find((i) => i.id === r);
+            if (inv && !inv.isUsed && !inv.isRevoked) next.add(r);
+          }
+          return next;
+        });
+      }
+      lastClickedRef.current = id;
+    } else if (event.ctrlKey || event.metaKey) {
+      setSelected((prev) => {
+        const next = new Set(prev);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        return next;
+      });
+      lastClickedRef.current = id;
+    } else {
+      setSelected(new Set([id]));
+      lastClickedRef.current = id;
+    }
+  };
+
+  const handleCheckboxClick = (id: number, disabled: boolean, event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (disabled) return;
+    if (event.shiftKey) {
+      handleRowClick(id, disabled, event);
+      return;
+    }
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+    lastClickedRef.current = id;
+  };
+
+  const toggleAll = () => {
+    if (selected.size === invites.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(invites.map((i) => i.id)));
+    }
+  };
+
+  const handleRevoke = async () => {
+    if (selected.size === 0) return;
+    try {
+      await revokeInvites(Array.from(selected));
+      setSelected(new Set());
+      load();
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const canRevoke = invites.some((i) => selected.has(i.id) && !i.isUsed && !i.isRevoked);
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h5">Invite Codes</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => { setCreatedCodes(null); setDialogOpen(true); }}>
-          Create Invites
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          {selected.size > 0 && (
+            <Button variant="contained" color="error" disabled={!canRevoke} onClick={handleRevoke}>
+              Revoke ({selected.size})
+            </Button>
+          )}
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => { setCreatedCodes(null); setDialogOpen(true); }}>
+            Create Invites
+          </Button>
+        </Box>
       </Box>
 
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
             <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox
+                  indeterminate={selected.size > 0 && selected.size < invites.length}
+                  checked={invites.length > 0 && selected.size === invites.length}
+                  onChange={toggleAll}
+                />
+              </TableCell>
               <TableCell>Code</TableCell>
               <TableCell>Company</TableCell>
               <TableCell>Status</TableCell>
@@ -82,18 +171,40 @@ export default function InvitesPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {invites.map((inv) => (
-              <TableRow key={inv.id}>
-                <TableCell sx={{ fontFamily: 'monospace' }}>{inv.code}</TableCell>
-                <TableCell>{inv.companyName || '-'}</TableCell>
-                <TableCell>
-                  <Chip size="small" label={inv.isUsed ? 'Used' : 'Active'} color={inv.isUsed ? 'default' : 'success'} />
-                </TableCell>
-                <TableCell>{new Date(inv.createdAt).toLocaleDateString()}</TableCell>
-                <TableCell>{new Date(inv.expiresAt).toLocaleDateString()}</TableCell>
-                <TableCell>{inv.usedByUserId ?? '-'}</TableCell>
-              </TableRow>
-            ))}
+            {invites.map((inv) => {
+              const labelId = `invite-checkbox-${inv.id}`;
+              const isRevoked = inv.isRevoked;
+              const isUsed = inv.isUsed;
+              const disabled = isUsed || isRevoked;
+              const status = isUsed ? 'Used' : isRevoked ? 'Revoked' : 'Active';
+              const color = isUsed ? 'default' : isRevoked ? 'error' : 'success' as const;
+              return (
+                <TableRow
+                  key={inv.id}
+                  hover
+                  selected={selected.has(inv.id)}
+                  onClick={(e) => handleRowClick(inv.id, disabled, e)}
+                  sx={{ cursor: disabled ? 'default' : 'pointer' }}
+                >
+                  <TableCell padding="checkbox" onClick={(e) => e.stopPropagation()}>
+                    <Checkbox
+                      id={labelId}
+                      checked={selected.has(inv.id)}
+                      onClick={(e) => handleCheckboxClick(inv.id, disabled, e)}
+                      disabled={disabled}
+                    />
+                  </TableCell>
+                  <TableCell sx={{ fontFamily: 'monospace' }}>{inv.code}</TableCell>
+                  <TableCell>{inv.companyName || '-'}</TableCell>
+                  <TableCell>
+                    <Chip size="small" label={status} color={color} />
+                  </TableCell>
+                  <TableCell>{new Date(inv.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell>{new Date(inv.expiresAt).toLocaleDateString()}</TableCell>
+                  <TableCell>{inv.usedByUserId ?? '-'}</TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

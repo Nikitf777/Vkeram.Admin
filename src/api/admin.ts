@@ -19,6 +19,7 @@ export interface Invite {
   code: string;
   companyName: string | null;
   isUsed: boolean;
+  isRevoked: boolean;
   usedByUserId: number | null;
   createdAt: string;
   usedAt: string | null;
@@ -68,6 +69,13 @@ export async function createInvite(
   return request('/invites', {
     method: 'POST',
     body: JSON.stringify({ count, companyName, expiresInDays }),
+  });
+}
+
+export async function revokeInvites(ids: number[]): Promise<void> {
+  await request('/invites/revoke', {
+    method: 'POST',
+    body: JSON.stringify({ ids }),
   });
 }
 
