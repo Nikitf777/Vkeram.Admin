@@ -435,6 +435,24 @@ export async function updateOrderLimits(limits: OrderLimitsData): Promise<void> 
   });
 }
 
+export interface AutoConfirmOrdersData {
+  isEnabled: boolean;
+  maxAutoConfirmPrice: number;
+  maxAutoConfirmQuantity: number;
+}
+
+export async function fetchAutoConfirmOrders(): Promise<AutoConfirmOrdersData & { id: number }> {
+  const data = await request<{ success: boolean; autoConfirmOrders: AutoConfirmOrdersData & { id: number } }>('/auto-confirm-orders');
+  return data.autoConfirmOrders;
+}
+
+export async function updateAutoConfirmOrders(settings: AutoConfirmOrdersData): Promise<void> {
+  await request('/auto-confirm-orders', {
+    method: 'PATCH',
+    body: JSON.stringify(settings),
+  });
+}
+
 export interface Buyer {
   id: string;
   name: string;

@@ -43,8 +43,10 @@ import {
   deleteBreak,
   fetchOrderLimits,
   updateOrderLimits,
+  fetchAutoConfirmOrders,
+  updateAutoConfirmOrders,
 } from '../api/admin';
-import type { DefaultWorkingHoursData, DaysSettings, BreakData, OrderLimitsData } from '../api/admin';
+import type { DefaultWorkingHoursData, DaysSettings, BreakData, OrderLimitsData, AutoConfirmOrdersData } from '../api/admin';
 
 interface SettingsItem<T> {
   name: string;
@@ -580,6 +582,105 @@ function OrderLimitsCard() {
   );
 }
 
+function AutoConfirmOrdersCard() {
+  const [original, setOriginal] = useState<AutoConfirmOrdersData>({
+    isEnabled: false,
+    maxAutoConfirmPrice: 10000,
+    maxAutoConfirmQuantity: 100,
+  });
+  const [current, setCurrent] = useState<AutoConfirmOrdersData>(original);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchAutoConfirmOrders();
+        const { id: _, ...settings } = data;
+        setOriginal(settings);
+        setCurrent(settings);
+      } catch {
+        /* ignore */
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const changed = JSON.stringify(current) !== JSON.stringify(original);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await updateAutoConfirmOrders(current);
+      setOriginal(current);
+    } catch {
+      /* ignore */
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setCurrent(original);
+  };
+
+  const updateField = <K extends keyof AutoConfirmOrdersData>(field: K, value: AutoConfirmOrdersData[K]) => {
+    setCurrent((prev) => ({ ...prev, [field]: value }));
+  };
+
+  if (loading) return <CircularProgress size={24} />;
+
+  return (
+    <Card>
+      <CardContent>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Typography sx={{ fontWeight: 500 }}>Auto-Confirm Orders</Typography>
+          
+          <FormControlLabel
+            control={
+              <Switch
+                checked={current.isEnabled}
+                onChange={(e) => updateField('isEnabled', e.target.checked)}
+              />
+            }
+            label={current.isEnabled ? 'Enabled' : 'Disabled'}
+          />
+
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <TextField
+              size="small"
+              label="Max Price"
+              type="number"
+              value={current.maxAutoConfirmPrice}
+              onChange={(e) => updateField('maxAutoConfirmPrice', parseFloat(e.target.value) || 0)}
+              sx={{ width: 140 }}
+            />
+            <TextField
+              size="small"
+              label="Max Quantity"
+              type="number"
+              value={current.maxAutoConfirmQuantity}
+              onChange={(e) => updateField('maxAutoConfirmQuantity', parseInt(e.target.value) || 0)}
+              sx={{ width: 140 }}
+            />
+          </Box>
+
+          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', mt: 2 }}>
+            <Button size="small" variant="outlined" onClick={handleCancel} disabled={!changed || saving}>
+              Cancel
+            </Button>
+            <Button size="small" variant="contained" onClick={handleSave} disabled={!changed || saving}>
+              {saving ? 'Saving…' : 'Confirm'}
+            </Button>
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function SettingsPage() {
   return (
     <Box>
@@ -644,6 +745,8 @@ export default function SettingsPage() {
         />
 
         <OrderLimitsCard />
+
+        <AutoConfirmOrdersCard />
       </Box>
     </Box>
   );
