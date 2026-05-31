@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { fetchOrderDetail, updateOrderConfirmationStatus, type OrderDetail } from '../api/admin'
+import { fetchOrderDetail, confirmOrder, type OrderDetail } from '../api/admin'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
@@ -17,8 +17,6 @@ import Alert from '@mui/material/Alert'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 const statusColor: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info'> = {
-  Confirmed: 'success',
-  Unconfirmed: 'warning',
   Paid: 'success',
   PartiallyPaid: 'info',
   Unpaid: 'warning',
@@ -47,7 +45,7 @@ export default function OrderDetailPage() {
     if (!orderId) return
     setConfirming(true)
     try {
-      await updateOrderConfirmationStatus(Number(orderId), 'Confirmed')
+      await confirmOrder(Number(orderId))
       const updated = await fetchOrderDetail(Number(orderId))
       setOrder(updated)
     } catch (err) {
@@ -67,7 +65,7 @@ export default function OrderDetailPage() {
       <Paper sx={{ p: 3, mb: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Typography variant="h5">Order #{order.orderId}</Typography>
-          {order.confirmationStatus === 'Unconfirmed' && (
+          {!order.isConfirmed && (
             <Button
               variant="contained"
               color="success"
@@ -80,7 +78,7 @@ export default function OrderDetailPage() {
           )}
         </Box>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
-          <Chip label={`Confirmation: ${order.confirmationStatus}`} color={statusColor[order.confirmationStatus ?? ''] || 'default'} />
+          <Chip label={`Confirmed: ${order.isConfirmed ? 'Yes' : 'No'}`} color={order.isConfirmed ? 'success' : 'warning'} />
           <Chip label={`Payment: ${order.paymentStatus}`} color={statusColor[order.paymentStatus ?? ''] || 'default'} />
           <Chip label={`Shipment: ${order.shipmentStatus}`} color={statusColor[order.shipmentStatus ?? ''] || 'default'} />
         </Box>

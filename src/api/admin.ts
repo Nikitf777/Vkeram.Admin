@@ -41,7 +41,7 @@ export interface Order {
   id: number;
   userCompany: string;
   userEmail: string;
-  confirmationStatus: string;
+  isConfirmed: boolean;
   paymentStatus: string;
   shipmentStatus: string;
   createdAt: string;
@@ -74,7 +74,7 @@ export interface OrderDetail {
   success: boolean;
   message: string;
   orderId: number;
-  confirmationStatus: string | null;
+  isConfirmed: boolean;
   paymentStatus: string | null;
   shipmentStatus: string | null;
   userId: number | null;
@@ -453,10 +453,9 @@ export async function updateAutoConfirmOrders(settings: AutoConfirmOrdersData): 
   });
 }
 
-export async function updateOrderConfirmationStatus(orderId: number, status: string): Promise<void> {
-  await request(`/orders/${orderId}/confirmation`, {
-    method: 'PATCH',
-    body: JSON.stringify({ status }),
+export async function confirmOrder(orderId: number): Promise<void> {
+  await request(`/orders/${orderId}/confirm`, {
+    method: 'POST',
   });
 }
 

@@ -135,7 +135,7 @@ export default function UserDetailPage() {
                 >
                   <TableCell>{o.id}</TableCell>
                   <TableCell>
-                    <Chip size="small" label={o.confirmationStatus} color={statusColor[o.confirmationStatus] || 'default'} />
+                    <Chip size="small" label={o.isConfirmed ? 'Yes' : 'No'} color={o.isConfirmed ? 'success' : 'warning'} />
                   </TableCell>
                   <TableCell>
                     <Chip size="small" label={o.paymentStatus} color={statusColor[o.paymentStatus] || 'default'} />
