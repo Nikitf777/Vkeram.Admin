@@ -17,11 +17,11 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 export interface Invite {
   id: number;
   code: string;
-  companyName: string | null;
+  buyerId: string | null;
   isUsed: boolean;
   isRevoked: boolean;
   usedByUserId: number | null;
-  usedByCompanyName: string | null;
+  usedByBuyerId: string | null;
   createdAt: string;
   usedAt: string | null;
   expiresAt: string;
@@ -29,7 +29,7 @@ export interface Invite {
 
 export interface User {
   id: number;
-  companyName: string;
+  buyerId: string;
   contactEmail: string;
   contactName: string;
   phone: string | null;
@@ -100,12 +100,12 @@ export async function fetchInvites(): Promise<Invite[]> {
 
 export async function createInvite(
   count: number,
-  companyName: string,
+  buyerId: string,
   expiresInDays: number
 ): Promise<{ codes: string[]; expiresAt: string }> {
   return request('/invites', {
     method: 'POST',
-    body: JSON.stringify({ count, companyName, expiresInDays }),
+    body: JSON.stringify({ count, buyerId, expiresInDays }),
   });
 }
 

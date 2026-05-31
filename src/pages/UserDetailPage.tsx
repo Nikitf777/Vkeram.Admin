@@ -76,8 +76,8 @@ export default function UserDetailPage() {
         <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             <Box>
-              <Typography variant="caption" color="text.secondary">Company</Typography>
-              <Typography>{user.companyName}</Typography>
+              <Typography variant="caption" color="text.secondary">Buyer ID</Typography>
+              <Typography>{user.buyerId}</Typography>
             </Box>
             <Box>
               <Typography variant="caption" color="text.secondary">Contact Name</Typography>

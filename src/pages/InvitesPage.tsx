@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  MenuItem,
   Paper,
   Table,
   TableBody,
@@ -22,8 +23,8 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { fetchInvites, createInvite, revokeInvites } from '../api/admin';
-import type { Invite } from '../api/admin';
+import { fetchInvites, createInvite, revokeInvites, fetchBuyers } from '../api/admin';
+import type { Invite, Buyer } from '../api/admin';
 
 export default function InvitesPage() {
   const [invites, setInvites] = useState<Invite[]>([]);
@@ -31,13 +32,16 @@ export default function InvitesPage() {
   const lastClickedRef = useRef<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [count, setCount] = useState(5);
-  const [companyName, setCompanyName] = useState('');
+  const [buyerId, setBuyerId] = useState('');
+  const [buyers, setBuyers] = useState<Buyer[]>([]);
   const [expiresInDays, setExpiresInDays] = useState(30);
   const [createdCodes, setCreatedCodes] = useState<string[] | null>(null);
 
   const load = useCallback(async () => {
     try {
-      setInvites(await fetchInvites());
+      const [invData, buyersData] = await Promise.all([fetchInvites(), fetchBuyers()]);
+      setInvites(invData);
+      setBuyers(buyersData);
     } catch {
       /* ignore */
     }
@@ -49,7 +53,7 @@ export default function InvitesPage() {
 
   const handleCreate = async () => {
     try {
-      const result = await createInvite(count, companyName, expiresInDays);
+      const result = await createInvite(count, buyerId, expiresInDays);
       setCreatedCodes(result.codes);
       setDialogOpen(false);
       load();
@@ -168,7 +172,7 @@ export default function InvitesPage() {
                 />
               </TableCell>
               <TableCell>Code</TableCell>
-              <TableCell>Company</TableCell>
+              <TableCell>Buyer</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Created</TableCell>
               <TableCell>Expires</TableCell>
@@ -200,7 +204,7 @@ export default function InvitesPage() {
                     />
                   </TableCell>
                   <TableCell sx={{ fontFamily: 'monospace' }}>{inv.code}</TableCell>
-                  <TableCell>{inv.companyName || '-'}</TableCell>
+                  <TableCell>{inv.buyerId ? (buyers.find(b => b.id === inv.buyerId)?.name ?? inv.buyerId) : '-'}</TableCell>
                   <TableCell>
                     <Chip size="small" label={status} color={color} />
                   </TableCell>
@@ -208,7 +212,7 @@ export default function InvitesPage() {
                   <TableCell>{new Date(inv.expiresAt).toLocaleDateString()}</TableCell>
                   <TableCell>
                     {inv.usedByUserId != null
-                      ? <Link to={`/users/${inv.usedByUserId}`} onClick={(e) => e.stopPropagation()}>{inv.usedByCompanyName ?? '-'}</Link>
+                      ? <Link to={`/users/${inv.usedByUserId}`} onClick={(e) => e.stopPropagation()}>{inv.usedByBuyerId ? (buyers.find(b => b.id === inv.usedByBuyerId)?.name ?? inv.usedByBuyerId) : '-'}</Link>
                       : '-'}
                   </TableCell>
                 </TableRow>
@@ -229,7 +233,12 @@ export default function InvitesPage() {
               <TextField fullWidth label="Expires (days)" type="number" value={expiresInDays} onChange={(e) => setExpiresInDays(Number(e.target.value))} slotProps={{ htmlInput: { min: 1 } }} />
             </Grid>
             <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField fullWidth label="Company (optional)" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+              <TextField fullWidth select label="Buyer (optional)" value={buyerId} onChange={(e) => setBuyerId(e.target.value)}>
+                <MenuItem value=""><em>None</em></MenuItem>
+                {buyers.map((b) => (
+                  <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>
+                ))}
+              </TextField>
             </Grid>
           </Grid>
         </DialogContent>

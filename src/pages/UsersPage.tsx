@@ -40,7 +40,7 @@ export default function UsersPage() {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Company</TableCell>
+              <TableCell>Buyer ID</TableCell>
               <TableCell>Contact Name</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Phone</TableCell>
@@ -52,7 +52,7 @@ export default function UsersPage() {
             {users.map((u) => (
               <TableRow key={u.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/users/${u.id}`)}>
                 <TableCell>{u.id}</TableCell>
-                <TableCell>{u.companyName}</TableCell>
+                <TableCell>{u.buyerId}</TableCell>
                 <TableCell>{u.contactName}</TableCell>
                 <TableCell>{u.contactEmail}</TableCell>
                 <TableCell>{u.phone || '-'}</TableCell>
