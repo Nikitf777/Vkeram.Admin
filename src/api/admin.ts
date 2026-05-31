@@ -410,6 +410,31 @@ export async function updateReservationDuration(durationMinutes: number): Promis
   });
 }
 
+export interface OrderLimitsData {
+  minOrderPrice: number;
+  maxOrderPrice: number;
+  minOrderQuantity: number;
+  maxOrderQuantity: number;
+  minReservationQuantity: number;
+  maxReservationQuantity: number;
+  minDeliveryQuantity: number;
+  maxDeliveryQuantity: number;
+  minProductReservationQuantity: number;
+  maxProductReservationQuantity: number;
+}
+
+export async function fetchOrderLimits(): Promise<OrderLimitsData & { id: number }> {
+  const data = await request<{ success: boolean; orderLimits: OrderLimitsData & { id: number } }>('/order-limits');
+  return data.orderLimits;
+}
+
+export async function updateOrderLimits(limits: OrderLimitsData): Promise<void> {
+  await request('/order-limits', {
+    method: 'PATCH',
+    body: JSON.stringify(limits),
+  });
+}
+
 export interface Buyer {
   id: string;
   name: string;

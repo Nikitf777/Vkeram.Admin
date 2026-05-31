@@ -41,8 +41,10 @@ import {
   createBreak,
   updateBreak,
   deleteBreak,
+  fetchOrderLimits,
+  updateOrderLimits,
 } from '../api/admin';
-import type { DefaultWorkingHoursData, DaysSettings, BreakData } from '../api/admin';
+import type { DefaultWorkingHoursData, DaysSettings, BreakData, OrderLimitsData } from '../api/admin';
 
 interface SettingsItem<T> {
   name: string;
@@ -463,6 +465,121 @@ function DurationCard({ title, fetcher, updater }: { title: string; fetcher: () 
   );
 }
 
+function OrderLimitsCard() {
+  const [original, setOriginal] = useState<OrderLimitsData>({
+    minOrderPrice: 0,
+    maxOrderPrice: 1000000,
+    minOrderQuantity: 1,
+    maxOrderQuantity: 10000,
+    minReservationQuantity: 1,
+    maxReservationQuantity: 100,
+    minDeliveryQuantity: 1,
+    maxDeliveryQuantity: 100,
+    minProductReservationQuantity: 1,
+    maxProductReservationQuantity: 1000,
+  });
+  const [current, setCurrent] = useState<OrderLimitsData>(original);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await fetchOrderLimits();
+        const { id: _, ...limits } = data;
+        setOriginal(limits);
+        setCurrent(limits);
+      } catch {
+        /* ignore */
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const changed = JSON.stringify(current) !== JSON.stringify(original);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await updateOrderLimits(current);
+      setOriginal(current);
+    } catch {
+      /* ignore */
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setCurrent(original);
+  };
+
+  const updateField = <K extends keyof OrderLimitsData>(field: K, value: OrderLimitsData[K]) => {
+    setCurrent((prev) => ({ ...prev, [field]: value }));
+  };
+
+  if (loading) return <CircularProgress size={24} />;
+
+  return (
+    <Card>
+      <CardContent>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography sx={{ fontWeight: 500 }}>Order Limits</Typography>
+          <Box sx={{ flex: 1 }} />
+          <IconButton size="small" onClick={() => setOpen(!open)}>
+            {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+          </IconButton>
+        </Box>
+        <Collapse in={open}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <Typography variant="subtitle2" color="text.secondary">Order Price</Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <TextField size="small" label="Min Price" type="number" value={current.minOrderPrice} onChange={(e) => updateField('minOrderPrice', parseFloat(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Max Price" type="number" value={current.maxOrderPrice} onChange={(e) => updateField('maxOrderPrice', parseFloat(e.target.value) || 0)} sx={{ width: 140 }} />
+            </Box>
+
+            <Typography variant="subtitle2" color="text.secondary">Order Quantity</Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <TextField size="small" label="Min Quantity" type="number" value={current.minOrderQuantity} onChange={(e) => updateField('minOrderQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Max Quantity" type="number" value={current.maxOrderQuantity} onChange={(e) => updateField('maxOrderQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+            </Box>
+
+            <Typography variant="subtitle2" color="text.secondary">Reservation Quantity</Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <TextField size="small" label="Min Quantity" type="number" value={current.minReservationQuantity} onChange={(e) => updateField('minReservationQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Max Quantity" type="number" value={current.maxReservationQuantity} onChange={(e) => updateField('maxReservationQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+            </Box>
+
+            <Typography variant="subtitle2" color="text.secondary">Delivery Quantity</Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <TextField size="small" label="Min Quantity" type="number" value={current.minDeliveryQuantity} onChange={(e) => updateField('minDeliveryQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Max Quantity" type="number" value={current.maxDeliveryQuantity} onChange={(e) => updateField('maxDeliveryQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+            </Box>
+
+            <Typography variant="subtitle2" color="text.secondary">Product Reservation Quantity</Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <TextField size="small" label="Min Quantity" type="number" value={current.minProductReservationQuantity} onChange={(e) => updateField('minProductReservationQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Max Quantity" type="number" value={current.maxProductReservationQuantity} onChange={(e) => updateField('maxProductReservationQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', mt: 2 }}>
+              <Button size="small" variant="outlined" onClick={handleCancel} disabled={!changed || saving}>
+                Cancel
+              </Button>
+              <Button size="small" variant="contained" onClick={handleSave} disabled={!changed || saving}>
+                {saving ? 'Saving…' : 'Confirm'}
+              </Button>
+            </Box>
+          </Box>
+        </Collapse>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function SettingsPage() {
   return (
     <Box>
@@ -525,6 +642,8 @@ export default function SettingsPage() {
           }, [])}
           updater={useCallback(async (s: DaysSettings) => { await updateMaximumDeliveryDays(s); }, [])}
         />
+
+        <OrderLimitsCard />
       </Box>
     </Box>
   );
