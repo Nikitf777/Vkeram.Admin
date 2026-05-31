@@ -8,6 +8,8 @@ import OrderDetailPage from './pages/OrderDetailPage';
 import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import SettingsPage from './pages/SettingsPage';
+import BuyersPage from './pages/BuyersPage';
+import BuyerDetailPage from './pages/BuyerDetailPage';
 
 export default function App() {
   return (
@@ -21,6 +23,8 @@ export default function App() {
           <Route path="/orders/:orderId" element={<OrderDetailPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
+          <Route path="/buyers" element={<BuyersPage />} />
+          <Route path="/buyers/:id" element={<BuyerDetailPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/invites" replace />} />
         </Route>

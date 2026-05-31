@@ -409,3 +409,32 @@ export async function updateReservationDuration(durationMinutes: number): Promis
     body: JSON.stringify({ durationMinutes }),
   });
 }
+
+export interface Buyer {
+  id: string;
+  name: string;
+}
+
+const buyersRequest = async <T>(path: string, options?: RequestInit): Promise<T> => {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const key = localStorage.getItem('adminKey');
+  if (key) headers['X-Admin-Key'] = key;
+
+  const res = await fetch(`${API_BASE}/api/Buyers${path}`, {
+    ...options,
+    headers: { ...headers, ...(options?.headers as Record<string, string>) },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || `Request failed (${res.status})`);
+  return data;
+};
+
+export async function fetchBuyers(): Promise<Buyer[]> {
+  const data = await buyersRequest<{ success: boolean; buyers: Buyer[] }>('');
+  return data.buyers;
+}
+
+export async function fetchBuyerDetail(id: string): Promise<Record<string, unknown>> {
+  const data = await buyersRequest<{ success: boolean; buyer: Record<string, unknown> }>(`/${encodeURIComponent(id)}`);
+  return data.buyer;
+}
