@@ -453,6 +453,13 @@ export async function updateAutoConfirmOrders(settings: AutoConfirmOrdersData): 
   });
 }
 
+export async function updateOrderConfirmationStatus(orderId: number, status: string): Promise<void> {
+  await request(`/orders/${orderId}/confirmation`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  });
+}
+
 export interface Buyer {
   id: string;
   name: string;

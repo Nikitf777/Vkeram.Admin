@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { fetchOrderDetail, type OrderDetail } from '../api/admin'
+import { fetchOrderDetail, updateOrderConfirmationStatus, type OrderDetail } from '../api/admin'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
@@ -14,11 +14,11 @@ import TableRow from '@mui/material/TableRow'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Alert from '@mui/material/Alert'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 const statusColor: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info'> = {
   Confirmed: 'success',
   Unconfirmed: 'warning',
-  Cancelled: 'error',
   Paid: 'success',
   PartiallyPaid: 'info',
   Unpaid: 'warning',
@@ -33,6 +33,7 @@ export default function OrderDetailPage() {
   const [order, setOrder] = useState<OrderDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [confirming, setConfirming] = useState(false)
 
   useEffect(() => {
     if (!orderId) return
@@ -42,6 +43,20 @@ export default function OrderDetailPage() {
       .finally(() => setLoading(false))
   }, [orderId])
 
+  const handleConfirm = async () => {
+    if (!orderId) return
+    setConfirming(true)
+    try {
+      await updateOrderConfirmationStatus(Number(orderId), 'Confirmed')
+      const updated = await fetchOrderDetail(Number(orderId))
+      setOrder(updated)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to confirm order')
+    } finally {
+      setConfirming(false)
+    }
+  }
+
   if (loading) return <Skeleton variant="rectangular" height={400} />
   if (error) return <Alert severity="error">{error}</Alert>
   if (!order) return null
@@ -50,7 +65,20 @@ export default function OrderDetailPage() {
     <Box>
       <Button onClick={() => navigate(-1)} sx={{ mb: 2 }}>&larr; Back</Button>
       <Paper sx={{ p: 3, mb: 2 }}>
-        <Typography variant="h5" gutterBottom>Order #{order.orderId}</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+          <Typography variant="h5">Order #{order.orderId}</Typography>
+          {order.confirmationStatus === 'Unconfirmed' && (
+            <Button
+              variant="contained"
+              color="success"
+              startIcon={<CheckCircleIcon />}
+              onClick={handleConfirm}
+              disabled={confirming}
+            >
+              {confirming ? 'Confirming...' : 'Confirm Order'}
+            </Button>
+          )}
+        </Box>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
           <Chip label={`Confirmation: ${order.confirmationStatus}`} color={statusColor[order.confirmationStatus ?? ''] || 'default'} />
           <Chip label={`Payment: ${order.paymentStatus}`} color={statusColor[order.paymentStatus ?? ''] || 'default'} />
