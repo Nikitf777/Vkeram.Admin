@@ -158,7 +158,7 @@ export default function OrderDetailPage() {
           User ID: {order.userId}
         </Typography>
         <Typography variant="body2">
-          Total: {order.totalQuantity} items for {order.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+          Total: {order.totalQuantity} items for {order.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} (incl. VAT)
         </Typography>
       </Paper>
 
@@ -193,6 +193,7 @@ export default function OrderDetailPage() {
                       <TableRow>
                         <TableCell>Product</TableCell>
                         <TableCell align="right">Qty</TableCell>
+                        <TableCell align="right">VAT</TableCell>
                         <TableCell align="right">Price</TableCell>
                         <TableCell align="right">Total</TableCell>
                       </TableRow>
@@ -202,6 +203,7 @@ export default function OrderDetailPage() {
                         <TableRow key={j}>
                           <TableCell>{p.productName}</TableCell>
                           <TableCell align="right">{p.quantity}</TableCell>
+                          <TableCell align="right">{p.vat > 0 ? `${p.vat}%` : '-'}</TableCell>
                           <TableCell align="right">{p.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
                           <TableCell align="right">{p.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
                         </TableRow>
@@ -246,6 +248,7 @@ export default function OrderDetailPage() {
                       <TableRow>
                         <TableCell>Product</TableCell>
                         <TableCell align="right">Qty</TableCell>
+                        <TableCell align="right">VAT</TableCell>
                         <TableCell align="right">Price</TableCell>
                         <TableCell align="right">Total</TableCell>
                       </TableRow>
@@ -255,6 +258,7 @@ export default function OrderDetailPage() {
                         <TableRow key={j}>
                           <TableCell>{p.productName}</TableCell>
                           <TableCell align="right">{p.quantity}</TableCell>
+                          <TableCell align="right">{p.vat > 0 ? `${p.vat}%` : '-'}</TableCell>
                           <TableCell align="right">{p.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
                           <TableCell align="right">{p.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
                         </TableRow>

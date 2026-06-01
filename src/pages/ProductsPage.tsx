@@ -51,6 +51,7 @@ export default function ProductsPage() {
               <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell align="right">Latest Price</TableCell>
+              <TableCell align="right">VAT</TableCell>
               <TableCell align="center">Hidden</TableCell>
             </TableRow>
           </TableHead>
@@ -67,6 +68,7 @@ export default function ProductsPage() {
                 <TableCell align="right">
                   {p.price != null ? `${p.price.toFixed(2)}` : '-'}
                 </TableCell>
+                <TableCell align="right">{p.vat > 0 ? `${p.vat}%` : '-'}</TableCell>
                 <TableCell align="center">
                   <Switch
                     checked={p.isHidden}

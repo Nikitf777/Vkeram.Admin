@@ -57,6 +57,7 @@ export interface ProductReservationInfo {
   productId: string;
   productName: string;
   quantity: number;
+  vat: number;
   price: number;
   totalPrice: number;
 }
@@ -158,6 +159,7 @@ export interface AdminProduct {
   id: string;
   name: string;
   price: number | null;
+  vat: number;
   isHidden: boolean;
 }
 
