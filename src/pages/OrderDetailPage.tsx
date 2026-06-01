@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { fetchOrderDetail, confirmOrder, type OrderDetail } from '../api/admin'
+import { fetchOrderDetail, confirmOrder, updateReservationStatus, updateDeliveryStatus, type OrderDetail } from '../api/admin'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
@@ -17,12 +17,13 @@ import Alert from '@mui/material/Alert'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 const statusColor: Record<string, 'default' | 'success' | 'warning' | 'error' | 'info'> = {
-  Paid: 'success',
-  PartiallyPaid: 'info',
-  Unpaid: 'warning',
-  Shipped: 'success',
-  PartiallyShipped: 'info',
-  Unshipped: 'warning',
+  paid: 'success',
+  partiallyPaid: 'info',
+  unpaid: 'warning',
+  cancelled: 'error',
+  shipped: 'success',
+  shippedPartially: 'info',
+  unshipped: 'warning',
 }
 
 export default function OrderDetailPage() {
@@ -52,6 +53,28 @@ export default function OrderDetailPage() {
       setError(err instanceof Error ? err.message : 'Failed to confirm order')
     } finally {
       setConfirming(false)
+    }
+  }
+
+  const handleUpdateReservationStatus = async (reservationId: number, currentPicked: boolean) => {
+    if (!orderId || !order?.reservations) return
+    try {
+      await updateReservationStatus(reservationId, !currentPicked)
+      const updated = await fetchOrderDetail(Number(orderId))
+      setOrder(updated)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update reservation')
+    }
+  }
+
+  const handleUpdateDeliveryStatus = async (deliveryId: number, currentDelivered: boolean) => {
+    if (!orderId || !order?.deliveries) return
+    try {
+      await updateDeliveryStatus(deliveryId, !currentDelivered)
+      const updated = await fetchOrderDetail(Number(orderId))
+      setOrder(updated)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update delivery')
     }
   }
 
@@ -98,9 +121,25 @@ export default function OrderDetailPage() {
           <Typography variant="h6" gutterBottom>Reservations</Typography>
           {order.reservations.map((r, i) => (
             <Box key={i} sx={{ mb: 2 }}>
-              <Typography variant="subtitle2">
-                Slot {i + 1}: {new Date(r.startTime).toLocaleString()} - {new Date(r.endTime).toLocaleString()}
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography variant="subtitle2">
+                  Slot {i + 1}: {new Date(r.startTime).toLocaleString()} - {new Date(r.endTime).toLocaleString()}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Chip
+                    label={r.picked ? 'Picked' : 'Not Picked'}
+                    color={r.picked ? 'success' : 'warning'}
+                    size="small"
+                  />
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => handleUpdateReservationStatus(r.id, r.picked)}
+                  >
+                    {r.picked ? 'Mark as Not Picked' : 'Mark as Picked'}
+                  </Button>
+                </Box>
+              </Box>
               {r.products && r.products.length > 0 && (
                 <TableContainer>
                   <Table size="small">
@@ -135,9 +174,25 @@ export default function OrderDetailPage() {
           <Typography variant="h6" gutterBottom>Deliveries</Typography>
           {order.deliveries.map((d, i) => (
             <Box key={i} sx={{ mb: 2 }}>
-              <Typography variant="subtitle2">
-                Delivery {i + 1}: {new Date(d.deliveryTime).toLocaleString()}
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography variant="subtitle2">
+                  Delivery {i + 1}: {new Date(d.deliveryTime).toLocaleString()}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Chip
+                    label={d.delivered ? 'Delivered' : 'Not Delivered'}
+                    color={d.delivered ? 'success' : 'warning'}
+                    size="small"
+                  />
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => handleUpdateDeliveryStatus(d.id, d.delivered)}
+                  >
+                    {d.delivered ? 'Mark as Not Delivered' : 'Mark as Delivered'}
+                  </Button>
+                </Box>
+              </Box>
               {d.products && d.products.length > 0 && (
                 <TableContainer>
                   <Table size="small">

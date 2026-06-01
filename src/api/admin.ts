@@ -60,13 +60,17 @@ export interface ProductReservationInfo {
 }
 
 export interface ReservationInfo {
+  id: number;
   startTime: string;
   endTime: string;
+  picked: boolean;
   products?: ProductReservationInfo[] | null;
 }
 
 export interface DeliveryInfo {
+  id: number;
   deliveryTime: string;
+  delivered: boolean;
   products?: ProductReservationInfo[] | null;
 }
 
@@ -456,6 +460,27 @@ export async function updateAutoConfirmOrders(settings: AutoConfirmOrdersData): 
 export async function confirmOrder(orderId: number): Promise<void> {
   await request(`/orders/${orderId}/confirm`, {
     method: 'POST',
+  });
+}
+
+export async function updateOrderStatus(orderId: number, paymentStatus?: string, shipmentStatus?: string): Promise<void> {
+  await request(`/orders/${orderId}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ paymentStatus, shipmentStatus }),
+  });
+}
+
+export async function updateReservationStatus(reservationId: number, status: boolean): Promise<void> {
+  await request(`/reservations/${reservationId}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  });
+}
+
+export async function updateDeliveryStatus(deliveryId: number, status: boolean): Promise<void> {
+  await request(`/deliveries/${deliveryId}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
   });
 }
 
