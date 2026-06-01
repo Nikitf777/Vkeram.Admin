@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { fetchOrderDetail, confirmOrder, updateReservationStatus, updateDeliveryStatus, type OrderDetail } from '../api/admin'
+import { fetchOrderDetail, confirmOrder, updatePaymentStatus, updateReservationStatus, updateDeliveryStatus, type OrderDetail } from '../api/admin'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
 import Chip from '@mui/material/Chip'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -34,6 +36,7 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [confirming, setConfirming] = useState(false)
+  const [updatingPayment, setUpdatingPayment] = useState(false)
 
   useEffect(() => {
     if (!orderId) return
@@ -54,6 +57,20 @@ export default function OrderDetailPage() {
       setError(err instanceof Error ? err.message : 'Failed to confirm order')
     } finally {
       setConfirming(false)
+    }
+  }
+
+  const handlePaymentStatusChange = async (status: string) => {
+    if (!orderId) return
+    setUpdatingPayment(true)
+    try {
+      await updatePaymentStatus(Number(orderId), status)
+      const updated = await fetchOrderDetail(Number(orderId))
+      setOrder(updated)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update payment status')
+    } finally {
+      setUpdatingPayment(false)
     }
   }
 
@@ -118,7 +135,20 @@ export default function OrderDetailPage() {
         </Box>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
           <Chip label={`Confirmed: ${order.isConfirmed ? 'Yes' : 'No'}`} color={order.isConfirmed ? 'success' : 'warning'} />
-          <Chip label={`Payment: ${order.paymentStatus}`} color={statusColor[order.paymentStatus ?? ''] || 'default'} />
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <Typography variant="body2">Payment:</Typography>
+            <Select
+              size="small"
+              value={order.paymentStatus ?? 'Unpaid'}
+              disabled={updatingPayment}
+              onChange={(e) => handlePaymentStatusChange(e.target.value)}
+              sx={{ minWidth: 140 }}
+            >
+              <MenuItem value="Paid">Paid</MenuItem>
+              <MenuItem value="PartiallyPaid">Partially Paid</MenuItem>
+              <MenuItem value="Unpaid">Unpaid</MenuItem>
+            </Select>
+          </Box>
           <Chip label={`Shipment: ${order.shipmentStatus}`} color={statusColor[order.shipmentStatus ?? ''] || 'default'} />
         </Box>
         <Typography variant="body2" color="text.secondary">

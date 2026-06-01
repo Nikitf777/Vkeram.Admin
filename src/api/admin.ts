@@ -504,6 +504,13 @@ export async function updateOrderStatus(orderId: number, paymentStatus?: string,
   });
 }
 
+export async function updatePaymentStatus(orderId: number, status: string): Promise<void> {
+  await request(`/orders/${orderId}/payment`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  });
+}
+
 export async function updateReservationStatus(reservationId: number, status: boolean): Promise<void> {
   await request(`/reservations/${reservationId}/status`, {
     method: 'PATCH',
