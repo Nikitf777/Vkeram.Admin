@@ -11,7 +11,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  TextField,
   Toolbar,
   Typography,
 } from '@mui/material';
@@ -25,7 +24,6 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { getAdminKey, setAdminKey } from '../api/admin';
 
 const DRAWER_WIDTH = 260;
 
@@ -45,12 +43,6 @@ export default function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [keyInput, setKeyInput] = useState(getAdminKey());
-
-  const handleKeyChange = (value: string) => {
-    setKeyInput(value);
-    setAdminKey(value);
-  };
 
   const drawer = (
       <Box>
@@ -59,16 +51,6 @@ export default function Layout() {
             Vkeram Admin
           </Typography>
         </Toolbar>
-        <Box sx={{ px: 2, pb: 2 }}>
-          <TextField
-            fullWidth
-            size="small"
-            type="password"
-            label="Admin Key"
-            value={keyInput}
-            onChange={(e) => handleKeyChange(e.target.value)}
-          />
-        </Box>
       <List>
         {navItems.map((item) => (
           <ListItem key={item.path} disablePadding>

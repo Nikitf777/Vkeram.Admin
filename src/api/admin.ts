@@ -1,9 +1,9 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const ADMIN_KEY = import.meta.env.VITE_ADMIN_KEY ?? '';
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  const key = localStorage.getItem('adminKey');
-  if (key) headers['X-Admin-Key'] = key;
+  if (ADMIN_KEY) headers['X-Admin-Key'] = ADMIN_KEY;
 
   const res = await fetch(`${API_BASE}/api/Admin${path}`, {
     ...options,
@@ -93,14 +93,6 @@ export interface OrderDetail {
   deliveries?: DeliveryInfo[] | null;
   totalPrice: number;
   totalQuantity: number;
-}
-
-export function setAdminKey(key: string) {
-  localStorage.setItem('adminKey', key);
-}
-
-export function getAdminKey(): string {
-  return localStorage.getItem('adminKey') || '';
 }
 
 export async function fetchInvites(): Promise<Invite[]> {
@@ -229,10 +221,9 @@ export async function fetchProductImages(productId: string): Promise<ProductImag
 export async function uploadProductImage(productId: string, file: File): Promise<void> {
   const formData = new FormData();
   formData.append('file', file);
-  const key = localStorage.getItem('adminKey');
   const res = await fetch(`${API_BASE}/api/Admin/products/${encodeURIComponent(productId)}/images`, {
     method: 'POST',
-    headers: key ? { 'X-Admin-Key': key } : {},
+    headers: ADMIN_KEY ? { 'X-Admin-Key': ADMIN_KEY } : {},
     body: formData,
   });
   if (!res.ok) {
@@ -566,8 +557,7 @@ export interface BuyerDetail {
 
 const buyersRequest = async <T>(path: string, options?: RequestInit): Promise<T> => {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  const key = localStorage.getItem('adminKey');
-  if (key) headers['X-Admin-Key'] = key;
+  if (ADMIN_KEY) headers['X-Admin-Key'] = ADMIN_KEY;
 
   const res = await fetch(`${API_BASE}/api/Buyers${path}`, {
     ...options,
