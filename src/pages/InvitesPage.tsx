@@ -42,6 +42,9 @@ export default function InvitesPage() {
       const [invData, buyersData] = await Promise.all([fetchInvites(), fetchBuyers()]);
       setInvites(invData);
       setBuyers(buyersData);
+      if (buyersData.length > 0 && !buyersData.find(b => b.id === buyerId)) {
+        setBuyerId(buyersData[0].id);
+      }
     } catch {
       /* ignore */
     }
@@ -233,8 +236,7 @@ export default function InvitesPage() {
               <TextField fullWidth label="Expires (days)" type="number" value={expiresInDays} onChange={(e) => setExpiresInDays(Number(e.target.value))} slotProps={{ htmlInput: { min: 1 } }} />
             </Grid>
             <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField fullWidth select label="Buyer (optional)" value={buyerId} onChange={(e) => setBuyerId(e.target.value)}>
-                <MenuItem value=""><em>None</em></MenuItem>
+              <TextField fullWidth select label="Buyer" value={buyerId} onChange={(e) => setBuyerId(e.target.value)} required>
                 {buyers.map((b) => (
                   <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>
                 ))}
