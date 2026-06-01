@@ -84,6 +84,8 @@ export interface OrderDetail {
   paymentStatus: string | null;
   shipmentStatus: string | null;
   userId: number | null;
+  userBuyerId: string | null;
+  userBuyerName: string | null;
   createdAt: string | null;
   reservations?: ReservationInfo[] | null;
   deliveries?: DeliveryInfo[] | null;

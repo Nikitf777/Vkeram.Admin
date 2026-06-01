@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { fetchOrderDetail, confirmOrder, updateReservationStatus, updateDeliveryStatus, type OrderDetail } from '../api/admin'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
 import Chip from '@mui/material/Chip'
 import Table from '@mui/material/Table'
@@ -87,7 +88,22 @@ export default function OrderDetailPage() {
       <Button onClick={() => navigate(-1)} sx={{ mb: 2 }}>&larr; Back</Button>
       <Paper sx={{ p: 3, mb: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-          <Typography variant="h5">Order #{order.orderId}</Typography>
+          <Box>
+            <Typography variant="h5">Order #{order.orderId}</Typography>
+            {order.userBuyerName && (
+              <Typography variant="subtitle1" color="text.secondary">
+                <Link
+                  component="button"
+                  variant="subtitle1"
+                  color="text.secondary"
+                  onClick={() => navigate(`/buyers/${order.userBuyerId}`)}
+                  underline="hover"
+                >
+                  {order.userBuyerName}
+                </Link>
+              </Typography>
+            )}
+          </Box>
           {!order.isConfirmed && (
             <Button
               variant="contained"
