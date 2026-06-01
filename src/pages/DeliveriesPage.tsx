@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Chip,
@@ -16,6 +17,7 @@ import { fetchDeliveries } from '../api/admin';
 import type { DeliveryItem } from '../api/admin';
 
 export default function DeliveriesPage() {
+  const navigate = useNavigate();
   const [items, setItems] = useState<DeliveryItem[]>([]);
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
@@ -68,7 +70,7 @@ export default function DeliveriesPage() {
           </TableHead>
           <TableBody>
             {items.map((d) => (
-              <TableRow key={d.id} hover>
+              <TableRow key={d.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/orders/${d.orderId}`)}>
                 <TableCell>{d.id}</TableCell>
                 <TableCell>{new Date(d.deliveryTime).toLocaleString(undefined, { hour12: false })}</TableCell>
                 <TableCell>

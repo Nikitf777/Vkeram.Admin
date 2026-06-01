@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Chip,
@@ -16,6 +17,7 @@ import { fetchReservations } from '../api/admin';
 import type { ReservationItem } from '../api/admin';
 
 export default function ReservationsPage() {
+  const navigate = useNavigate();
   const [items, setItems] = useState<ReservationItem[]>([]);
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
@@ -70,7 +72,7 @@ export default function ReservationsPage() {
           </TableHead>
           <TableBody>
             {items.map((r) => (
-              <TableRow key={r.id} hover>
+              <TableRow key={r.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/orders/${r.orderId}`)}>
                 <TableCell>{r.id}</TableCell>
                 <TableCell>{r.day}</TableCell>
                 <TableCell>{r.startTime}</TableCell>
