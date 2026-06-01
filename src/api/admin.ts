@@ -30,6 +30,7 @@ export interface Invite {
 export interface User {
   id: number;
   buyerId: string;
+  buyerName: string;
   contactEmail: string;
   contactName: string;
   phone: string | null;

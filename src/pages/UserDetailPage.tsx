@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -7,6 +7,7 @@ import {
   CardContent,
   Chip,
   CircularProgress,
+  Link,
   Paper,
   Table,
   TableBody,
@@ -76,8 +77,12 @@ export default function UserDetailPage() {
         <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             <Box>
-              <Typography variant="caption" color="text.secondary">Buyer ID</Typography>
-              <Typography>{user.buyerId}</Typography>
+              <Typography variant="caption" color="text.secondary">Company</Typography>
+              <Typography>
+                <Link component={RouterLink} to={`/buyers/${encodeURIComponent(user.buyerId)}`} underline="hover">
+                  {user.buyerName || user.buyerId}
+                </Link>
+              </Typography>
             </Box>
             <Box>
               <Typography variant="caption" color="text.secondary">Contact Name</Typography>

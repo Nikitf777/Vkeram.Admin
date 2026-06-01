@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
   Box,
+  Link,
   Paper,
   Table,
   TableBody,
@@ -40,7 +41,7 @@ export default function UsersPage() {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Buyer ID</TableCell>
+              <TableCell>Company</TableCell>
               <TableCell>Contact Name</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Phone</TableCell>
@@ -52,7 +53,11 @@ export default function UsersPage() {
             {users.map((u) => (
               <TableRow key={u.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/users/${u.id}`)}>
                 <TableCell>{u.id}</TableCell>
-                <TableCell>{u.buyerId}</TableCell>
+                <TableCell>
+                  <Link component={RouterLink} to={`/buyers/${encodeURIComponent(u.buyerId)}`} underline="hover">
+                    {u.buyerName || u.buyerId}
+                  </Link>
+                </TableCell>
                 <TableCell>{u.contactName}</TableCell>
                 <TableCell>{u.contactEmail}</TableCell>
                 <TableCell>{u.phone || '-'}</TableCell>
