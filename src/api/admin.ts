@@ -416,6 +416,18 @@ export async function updateAllowDelivery(isAllowed: boolean): Promise<void> {
   });
 }
 
+export async function fetchHideProductsWithoutPrice(): Promise<{ id: number; isEnabled: boolean }> {
+  const data = await request<{ success: boolean; hideProductsWithoutPrice: { id: number; isEnabled: boolean } }>('/hide-products-without-price');
+  return data.hideProductsWithoutPrice;
+}
+
+export async function updateHideProductsWithoutPrice(isEnabled: boolean): Promise<void> {
+  await request('/hide-products-without-price', {
+    method: 'PATCH',
+    body: JSON.stringify({ isEnabled }),
+  });
+}
+
 export async function fetchReservationDuration(): Promise<{ id: number; durationMinutes: number }> {
   const data = await request<{ success: boolean; reservationDuration: { id: number; durationMinutes: number } }>('/reservation-duration');
   return data.reservationDuration;

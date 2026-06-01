@@ -35,6 +35,8 @@ import {
   updateAllowBooking,
   fetchAllowDelivery,
   updateAllowDelivery,
+  fetchHideProductsWithoutPrice,
+  updateHideProductsWithoutPrice,
   fetchReservationDuration,
   updateReservationDuration,
   fetchBreaks,
@@ -348,7 +350,7 @@ function DaysCard({ title, fetcher, updater }: { title: string; fetcher: () => P
   );
 }
 
-function AllowCard({ title, fetcher, updater }: { title: string; fetcher: () => Promise<boolean>; updater: (v: boolean) => Promise<void> }) {
+function AllowCard({ title, fetcher, updater, enabledLabel = 'Allowed', disabledLabel = 'Not allowed' }: { title: string; fetcher: () => Promise<boolean>; updater: (v: boolean) => Promise<void>; enabledLabel?: string; disabledLabel?: string }) {
   const [original, setOriginal] = useState(true);
   const [current, setCurrent] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -390,7 +392,7 @@ function AllowCard({ title, fetcher, updater }: { title: string; fetcher: () => 
         <Typography sx={{ minWidth: 200, fontWeight: 500 }}>{title}</Typography>
         <FormControlLabel
           control={<Switch checked={current} onChange={(e) => setCurrent(e.target.checked)} />}
-          label={current ? 'Allowed' : 'Not allowed'}
+          label={current ? enabledLabel : disabledLabel}
         />
         <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
           <Button size="small" variant="outlined" onClick={() => setCurrent(original)} disabled={!changed || saving}>
@@ -637,7 +639,7 @@ function AutoConfirmOrdersCard() {
       <CardContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Typography sx={{ fontWeight: 500 }}>Auto-Confirm Orders</Typography>
-          
+
           <FormControlLabel
             control={
               <Switch
@@ -700,6 +702,14 @@ export default function SettingsPage() {
           title="Allow Delivery"
           fetcher={useCallback(async () => { const d = await fetchAllowDelivery(); return d.isAllowed; }, [])}
           updater={useCallback(async (v: boolean) => { await updateAllowDelivery(v); }, [])}
+        />
+
+        <AllowCard
+          title="Hide Products Without Price"
+          fetcher={useCallback(async () => { const d = await fetchHideProductsWithoutPrice(); return d.isEnabled; }, [])}
+          updater={useCallback(async (v: boolean) => { await updateHideProductsWithoutPrice(v); }, [])}
+          enabledLabel="Hidden"
+          disabledLabel="Not hidden"
         />
 
         <DurationCard
