@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
+  CircularProgress,
   Paper,
   Switch,
   Table,
@@ -19,12 +20,16 @@ export default function BuyersPage() {
   const navigate = useNavigate();
   const [buyers, setBuyers] = useState<Buyer[]>([]);
   const [onlyWithUsers, setOnlyWithUsers] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
+    setLoading(true);
     try {
       setBuyers(await fetchBuyers(onlyWithUsers));
     } catch {
       /* ignore */
+    } finally {
+      setLoading(false);
     }
   }, [onlyWithUsers]);
 
@@ -42,6 +47,11 @@ export default function BuyersPage() {
         </Box>
       </Box>
 
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
@@ -62,6 +72,7 @@ export default function BuyersPage() {
           </TableBody>
         </Table>
       </TableContainer>
+      )}
     </Box>
   );
 }

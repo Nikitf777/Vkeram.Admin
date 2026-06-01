@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
+  CircularProgress,
   Paper,
   Switch,
   Table,
@@ -18,12 +19,16 @@ import type { AdminProduct } from '../api/admin';
 export default function ProductsPage() {
   const navigate = useNavigate();
   const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
+    setLoading(true);
     try {
       setProducts(await fetchAdminProducts());
     } catch {
       /* ignore */
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -44,6 +49,11 @@ export default function ProductsPage() {
     <Box>
       <Typography variant="h5" sx={{ mb: 3 }}>Products</Typography>
 
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
@@ -81,6 +91,7 @@ export default function ProductsPage() {
           </TableBody>
         </Table>
       </TableContainer>
+      )}
     </Box>
   );
 }
