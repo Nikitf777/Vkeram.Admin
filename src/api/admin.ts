@@ -150,6 +150,13 @@ export interface ProductWithPrice {
   price: number | null;
 }
 
+export interface AdminProduct {
+  id: string;
+  name: string;
+  price: number | null;
+  isHidden: boolean;
+}
+
 export interface ProductPriceEntry {
   id: number;
   productId: string;
@@ -164,11 +171,19 @@ export async function fetchProducts(): Promise<ProductWithPrice[]> {
   return res.json();
 }
 
-export async function fetchProduct(id: string): Promise<ProductWithPrice> {
-  const url = `${API_BASE}/api/products/${encodeURIComponent(id)}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch product (${res.status})`);
-  return res.json();
+export async function fetchAdminProducts(): Promise<AdminProduct[]> {
+  return request('/products');
+}
+
+export async function updateProductHidden(productId: string, isHidden: boolean): Promise<void> {
+  await request(`/products/${encodeURIComponent(productId)}/hidden`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status: isHidden }),
+  });
+}
+
+export async function fetchProduct(id: string): Promise<AdminProduct> {
+  return request<AdminProduct>(`/products/${encodeURIComponent(id)}`);
 }
 
 export async function fetchProductPriceHistory(productId: string): Promise<ProductPriceEntry[]> {
@@ -262,10 +277,9 @@ export interface SaveProductCharacteristicData {
 }
 
 export async function fetchProductCharacteristics(productId: string): Promise<ProductCharacteristic | null> {
-  const url = `${API_BASE}/api/products/${encodeURIComponent(productId)}?includeCharacteristics=true`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch characteristics (${res.status})`);
-  const data = await res.json();
+  const data = await request<{ characteristics: ProductCharacteristic | null }>(
+    `/products/${encodeURIComponent(productId)}?includeCharacteristics=true`
+  );
   return data.characteristics ?? null;
 }
 

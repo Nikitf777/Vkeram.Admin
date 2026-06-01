@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Paper,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -11,16 +12,16 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { fetchProducts } from '../api/admin';
-import type { ProductWithPrice } from '../api/admin';
+import { fetchAdminProducts, updateProductHidden } from '../api/admin';
+import type { AdminProduct } from '../api/admin';
 
 export default function ProductsPage() {
   const navigate = useNavigate();
-  const [products, setProducts] = useState<ProductWithPrice[]>([]);
+  const [products, setProducts] = useState<AdminProduct[]>([]);
 
   const load = useCallback(async () => {
     try {
-      setProducts(await fetchProducts());
+      setProducts(await fetchAdminProducts());
     } catch {
       /* ignore */
     }
@@ -29,6 +30,15 @@ export default function ProductsPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  const handleToggleHidden = async (productId: string, currentHidden: boolean) => {
+    try {
+      await updateProductHidden(productId, !currentHidden);
+      await load();
+    } catch {
+      /* ignore */
+    }
+  };
 
   return (
     <Box>
@@ -41,6 +51,7 @@ export default function ProductsPage() {
               <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell align="right">Latest Price</TableCell>
+              <TableCell align="center">Hidden</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -55,6 +66,13 @@ export default function ProductsPage() {
                 <TableCell>{p.name}</TableCell>
                 <TableCell align="right">
                   {p.price != null ? `${p.price.toFixed(2)}` : '-'}
+                </TableCell>
+                <TableCell align="center">
+                  <Switch
+                    checked={p.isHidden}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={() => handleToggleHidden(p.id, p.isHidden)}
+                  />
                 </TableCell>
               </TableRow>
             ))}

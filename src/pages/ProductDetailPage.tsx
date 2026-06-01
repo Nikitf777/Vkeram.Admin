@@ -37,7 +37,7 @@ import {
   fetchProductCharacteristics,
   saveProductCharacteristic,
 } from '../api/admin';
-import type { ProductWithPrice, ProductPriceEntry, ProductImage, ProductCharacteristic, SaveProductCharacteristicData } from '../api/admin';
+import type { AdminProduct, ProductPriceEntry, ProductImage, ProductCharacteristic, SaveProductCharacteristicData } from '../api/admin';
 
 function characteristicLabel(key: string): string {
   const map: Record<string, string> = {
@@ -62,7 +62,7 @@ function characteristicLabel(key: string): string {
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [product, setProduct] = useState<ProductWithPrice | null>(null);
+  const [product, setProduct] = useState<AdminProduct | null>(null);
   const [prices, setPrices] = useState<ProductPriceEntry[]>([]);
   const [images, setImages] = useState<ProductImage[]>([]);
   const [characteristics, setCharacteristics] = useState<ProductCharacteristic | null>(null);
