@@ -538,6 +538,46 @@ export async function fetchBuyers(): Promise<Buyer[]> {
   return data.buyers;
 }
 
+export interface ReservationItem {
+  id: number;
+  day: string;
+  startTime: string;
+  endTime: string;
+  picked: boolean;
+  orderId: number;
+  isConfirmed: boolean;
+}
+
+export interface DeliveryItem {
+  id: number;
+  deliveryTime: string;
+  delivered: boolean;
+  orderId: number;
+  isConfirmed: boolean;
+}
+
+export async function fetchReservations(minDate?: string, maxDate?: string): Promise<ReservationItem[]> {
+  const params = new URLSearchParams();
+  if (minDate) params.set('minDate', minDate);
+  if (maxDate) params.set('maxDate', maxDate);
+  const qs = params.toString();
+  const data = await request<{ success: boolean; reservations: ReservationItem[] }>(
+    `/reservations${qs ? `?${qs}` : ''}`
+  );
+  return data.reservations;
+}
+
+export async function fetchDeliveries(minDate?: string, maxDate?: string): Promise<DeliveryItem[]> {
+  const params = new URLSearchParams();
+  if (minDate) params.set('minDate', minDate);
+  if (maxDate) params.set('maxDate', maxDate);
+  const qs = params.toString();
+  const data = await request<{ success: boolean; deliveries: DeliveryItem[] }>(
+    `/deliveries${qs ? `?${qs}` : ''}`
+  );
+  return data.deliveries;
+}
+
 export async function fetchBuyerDetail(id: string): Promise<Record<string, unknown>> {
   const data = await buyersRequest<{ success: boolean; buyer: Record<string, unknown> }>(`/${encodeURIComponent(id)}`);
   return data.buyer;
