@@ -531,6 +531,7 @@ export async function updateDeliveryStatus(deliveryId: number, status: boolean):
 export interface Buyer {
   id: string;
   name: string;
+  registeredUsers: number;
 }
 
 const buyersRequest = async <T>(path: string, options?: RequestInit): Promise<T> => {

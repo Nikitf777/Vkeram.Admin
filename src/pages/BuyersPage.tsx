@@ -48,6 +48,7 @@ export default function BuyersPage() {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
+              <TableCell align="right">Registered Users</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -55,6 +56,7 @@ export default function BuyersPage() {
               <TableRow key={b.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/buyers/${encodeURIComponent(b.id)}`)}>
                 <TableCell>{b.id}</TableCell>
                 <TableCell>{b.name}</TableCell>
+                <TableCell align="right">{b.registeredUsers}</TableCell>
               </TableRow>
             ))}
           </TableBody>
