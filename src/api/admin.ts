@@ -393,7 +393,9 @@ export async function updateMaximumDeliveryDays(settings: DaysSettings): Promise
 }
 
 export async function fetchAllowBooking(): Promise<{ id: number; isAllowed: boolean }> {
-  const data = await request<{ success: boolean; allowBooking: { id: number; isAllowed: boolean } }>('/allow-booking');
+  const res = await fetch(`${API_BASE}/api/Orders/allow-booking`);
+  if (!res.ok) throw new Error(`Failed to fetch allow booking (${res.status})`);
+  const data = await res.json();
   return data.allowBooking;
 }
 
@@ -405,7 +407,9 @@ export async function updateAllowBooking(isAllowed: boolean): Promise<void> {
 }
 
 export async function fetchAllowDelivery(): Promise<{ id: number; isAllowed: boolean }> {
-  const data = await request<{ success: boolean; allowDelivery: { id: number; isAllowed: boolean } }>('/allow-delivery');
+  const res = await fetch(`${API_BASE}/api/Orders/allow-delivery`);
+  if (!res.ok) throw new Error(`Failed to fetch allow delivery (${res.status})`);
+  const data = await res.json();
   return data.allowDelivery;
 }
 
