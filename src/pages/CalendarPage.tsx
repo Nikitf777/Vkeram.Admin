@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Box, TextField, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Box, Chip, Link, Paper, TextField, Typography } from '@mui/material';
 import Timeline from 'react-calendar-timeline';
 import 'react-calendar-timeline/dist/style.css';
 import { fetchReservations } from '../api/admin';
@@ -31,7 +32,9 @@ function dateToTime(dateStr: string, bound: 'start' | 'end'): number {
 }
 
 export default function CalendarPage() {
+  const navigate = useNavigate();
   const [reservations, setReservations] = useState<ReservationItem[]>([]);
+  const [selectedReservation, setSelectedReservation] = useState<ReservationItem | null>(null);
   const [minDate, setMinDate] = useState('');
   const [maxDate, setMaxDate] = useState('');
 
@@ -111,7 +114,7 @@ export default function CalendarPage() {
       return {
         id: r.id,
         group: groupId,
-        title: `Order #${r.orderId} ${r.day} ${formatTime(r.startTime)}-${formatTime(r.endTime)}${r.isConfirmed ? '' : ' (unconfirmed)'}`,
+        title: '',
         start_time: start,
         end_time: end,
         itemProps: {
@@ -147,6 +150,23 @@ export default function CalendarPage() {
           onChange={(e) => setMaxDate(e.target.value)}
         />
       </Box>
+      <Box sx={{ mb: 2 }}>
+        <Paper sx={{ p: 2, display: 'flex', gap: 2, alignItems: 'center', minHeight: 56 }}>
+          {selectedReservation ? (
+            <>
+              <Typography variant="body1">
+                Order <Link component="button" variant="body1" onClick={() => navigate(`/orders/${selectedReservation.orderId}`)} underline="hover">#{selectedReservation.orderId}</Link>
+                {' | '}{selectedReservation.day} {formatTime(selectedReservation.startTime)}-{formatTime(selectedReservation.endTime)}
+              </Typography>
+              <Chip size="small" label={selectedReservation.isConfirmed ? 'Confirmed' : 'Unconfirmed'} color={selectedReservation.isConfirmed ? 'success' : 'warning'} />
+              <Chip size="small" label={selectedReservation.picked ? 'Picked' : 'Not picked'} color={selectedReservation.picked ? 'info' : 'default'} />
+              <Typography variant="body2" color="text.secondary">{selectedReservation.userBuyerName}</Typography>
+            </>
+          ) : (
+            <Typography variant="body1" color="text.secondary">Select a reservation to view its details</Typography>
+          )}
+        </Paper>
+      </Box>
       <Timeline
         groups={groups}
         items={items}
@@ -165,6 +185,15 @@ export default function CalendarPage() {
         visibleTimeStart={visibleTimeStart}
         visibleTimeEnd={visibleTimeEnd}
         onTimeChange={handleTimeChange}
+        onItemSelect={(itemId) => {
+          const r = reservations.find(x => x.id === itemId);
+          if (r) setSelectedReservation(r);
+        }}
+        onItemDeselect={() => setSelectedReservation(null)}
+        onItemDoubleClick={(itemId) => {
+          const r = reservations.find(x => x.id === itemId);
+          if (r) navigate(`/orders/${r.orderId}`);
+        }}
         sidebarWidth={200}
         lineHeight={60}
         itemHeightRatio={0.7}
