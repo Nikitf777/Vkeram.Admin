@@ -54,7 +54,7 @@ export default function UsersPage() {
               <TableRow key={u.id} hover sx={{ cursor: 'pointer' }} onClick={() => navigate(`/users/${u.id}`)}>
                 <TableCell>{u.id}</TableCell>
                 <TableCell>
-                  <Link component={RouterLink} to={`/buyers/${encodeURIComponent(u.buyerId)}`} underline="hover">
+                  <Link component={RouterLink} to={`/buyers/${encodeURIComponent(u.buyerId)}`} underline="hover" onClick={(e) => e.stopPropagation()}>
                     {u.buyerName || u.buyerId}
                   </Link>
                 </TableCell>
