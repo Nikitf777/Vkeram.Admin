@@ -12,6 +12,7 @@ import BuyersPage from './pages/BuyersPage';
 import BuyerDetailPage from './pages/BuyerDetailPage';
 import ReservationsPage from './pages/ReservationsPage';
 import DeliveriesPage from './pages/DeliveriesPage';
+import CalendarPage from './pages/CalendarPage';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/orders/:orderId" element={<OrderDetailPage />} />
           <Route path="/reservations" element={<ReservationsPage />} />
           <Route path="/deliveries" element={<DeliveriesPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/buyers" element={<BuyersPage />} />

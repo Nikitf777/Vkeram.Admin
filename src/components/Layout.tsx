@@ -20,6 +20,7 @@ import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 import PeopleIcon from '@mui/icons-material/People';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import EventNoteIcon from '@mui/icons-material/EventNote';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import StorefrontIcon from '@mui/icons-material/Storefront';
@@ -32,7 +33,8 @@ const navItems = [
   { label: 'Invites', path: '/invites', icon: <ConfirmationNumberIcon /> },
   { label: 'Users', path: '/users', icon: <PeopleIcon /> },
   { label: 'Orders', path: '/orders', icon: <ReceiptIcon /> },
-  { label: 'Reservations', path: '/reservations', icon: <CalendarMonthIcon /> },
+  { label: 'Reservations', path: '/reservations', icon: <EventNoteIcon /> },
+  { label: 'Calendar', path: '/calendar', icon: <CalendarMonthIcon /> },
   { label: 'Deliveries', path: '/deliveries', icon: <LocalShippingIcon /> },
   { label: 'Products', path: '/products', icon: <InventoryIcon /> },
   { label: 'Buyers', path: '/buyers', icon: <StorefrontIcon /> },

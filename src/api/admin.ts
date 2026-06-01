@@ -550,6 +550,8 @@ export interface ReservationItem {
   picked: boolean;
   orderId: number;
   isConfirmed: boolean;
+  userBuyerId: string | null;
+  userBuyerName: string | null;
 }
 
 export interface DeliveryItem {
