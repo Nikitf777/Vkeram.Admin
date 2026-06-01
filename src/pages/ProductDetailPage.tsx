@@ -346,7 +346,7 @@ export default function ProductDetailPage() {
             <TableBody>
               {prices.map((p) => (
                 <TableRow key={p.id}>
-                  <TableCell>{new Date(p.createdAt).toLocaleString()}</TableCell>
+                  <TableCell>{new Date(p.createdAt).toLocaleString(undefined, { hour12: false })}</TableCell>
                   <TableCell align="right">{p.price.toFixed(2)}</TableCell>
                 </TableRow>
               ))}

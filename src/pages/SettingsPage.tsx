@@ -9,6 +9,8 @@ import {
   Collapse,
   FormControlLabel,
   IconButton,
+  MenuItem,
+  Select,
   Switch,
   Table,
   TableBody,
@@ -117,23 +119,15 @@ function DefaultWorkingHoursCard() {
     <Card>
       <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
         <Typography sx={{ minWidth: 200, fontWeight: 500 }}>Default Working Hours</Typography>
-        <TextField
-          size="small"
+        <TimeField
           label="Start"
-          type="time"
           value={item.current.startTime}
-          onChange={(e) => setCurrent({ ...item.current, startTime: e.target.value })}
-          slotProps={{ htmlInput: { step: 60 } }}
-          sx={{ width: 140 }}
+          onChange={(v) => setCurrent({ ...item.current, startTime: v })}
         />
-        <TextField
-          size="small"
+        <TimeField
           label="End"
-          type="time"
           value={item.current.endTime}
-          onChange={(e) => setCurrent({ ...item.current, endTime: e.target.value })}
-          slotProps={{ htmlInput: { step: 60 } }}
-          sx={{ width: 140 }}
+          onChange={(v) => setCurrent({ ...item.current, endTime: v })}
         />
         <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
           <Button size="small" variant="outlined" onClick={handleCancel} disabled={!item.changed || item.saving}>
@@ -232,8 +226,8 @@ function BreaksCard() {
         </Box>
         <Collapse in={open}>
           <Box sx={{ display: 'flex', gap: 2, mt: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-            <TextField size="small" label="Start" type="time" value={newStart} onChange={(e) => { setNewStart(e.target.value); setAddError(''); }} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 140 }} error={!!addError} />
-            <TextField size="small" label="End" type="time" value={newEnd} onChange={(e) => { setNewEnd(e.target.value); setAddError(''); }} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 140 }} error={!!addError} />
+            <TimeField label="Start" value={newStart} onChange={(v) => { setNewStart(v); setAddError(''); }} error={!!addError} />
+            <TimeField label="End" value={newEnd} onChange={(v) => { setNewEnd(v); setAddError(''); }} error={!!addError} />
             <Button size="small" variant="contained" onClick={handleAdd} disabled={!!validateBreak(newStart, newEnd)}>Add</Button>
           </Box>
           {addError && <Typography color="error" variant="caption" sx={{ mt: 1, display: 'block' }}>{addError}</Typography>}
@@ -253,10 +247,10 @@ function BreaksCard() {
                       {editId === b.id ? (
                         <>
                           <TableCell>
-                            <TextField size="small" type="time" value={editStart} onChange={(e) => { setEditStart(e.target.value); setEditError(''); }} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 120 }} error={!!editError} />
+                            <TimeField value={editStart} onChange={(v) => { setEditStart(v); setEditError(''); }} error={!!editError} />
                           </TableCell>
                           <TableCell>
-                            <TextField size="small" type="time" value={editEnd} onChange={(e) => { setEditEnd(e.target.value); setEditError(''); }} slotProps={{ htmlInput: { step: 60 } }} sx={{ width: 120 }} error={!!editError} />
+                            <TimeField value={editEnd} onChange={(v) => { setEditEnd(v); setEditError(''); }} error={!!editError} />
                           </TableCell>
                           <TableCell align="right">
                             <Button size="small" onClick={() => handleSaveEdit(b.id)} disabled={!!validateBreak(editStart, editEnd, b.id)}>Save</Button>
@@ -347,6 +341,35 @@ function DaysCard({ title, fetcher, updater }: { title: string; fetcher: () => P
         </Box>
       </CardContent>
     </Card>
+  );
+}
+
+const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+const MINUTES = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
+
+function TimeField({ value, onChange, label, size, sx, error }: {
+  value: string;
+  onChange: (v: string) => void;
+  label?: string;
+  size?: 'small' | 'medium';
+  sx?: Record<string, unknown>;
+  error?: boolean;
+}) {
+  const parts = value.split(':');
+  const hour = parts[0] || '00';
+  const minute = parts[1] || '00';
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ...sx }}>
+      {label && <Typography variant="caption" sx={{ mr: 0.5, color: error ? 'error.main' : undefined }}>{label}</Typography>}
+      <Select size={size || 'small'} value={hour} onChange={(e) => onChange(`${e.target.value}:${minute}`)} sx={{ width: 70 }}>
+        {HOURS.map(h => <MenuItem key={h} value={h}>{h}</MenuItem>)}
+      </Select>
+      <Typography>:</Typography>
+      <Select size={size || 'small'} value={minute} onChange={(e) => onChange(`${hour}:${e.target.value}`)} sx={{ width: 70 }}>
+        {MINUTES.map(m => <MenuItem key={m} value={m}>{m}</MenuItem>)}
+      </Select>
+    </Box>
   );
 }
 

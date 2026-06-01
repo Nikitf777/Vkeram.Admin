@@ -106,7 +106,7 @@ export default function OrderDetailPage() {
           <Chip label={`Shipment: ${order.shipmentStatus}`} color={statusColor[order.shipmentStatus ?? ''] || 'default'} />
         </Box>
         <Typography variant="body2" color="text.secondary">
-          Created: {order.createdAt ? new Date(order.createdAt).toLocaleString() : '-'}
+            Created: {order.createdAt ? new Date(order.createdAt).toLocaleString(undefined, { hour12: false }) : '-'}
         </Typography>
         <Typography variant="body2">
           User ID: {order.userId}
@@ -123,7 +123,7 @@ export default function OrderDetailPage() {
             <Box key={i} sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                 <Typography variant="subtitle2">
-                  Slot {i + 1}: {new Date(r.startTime).toLocaleString()} - {new Date(r.endTime).toLocaleString()}
+                  Slot {i + 1}: {new Date(r.startTime).toLocaleString(undefined, { hour12: false })} - {new Date(r.endTime).toLocaleString(undefined, { hour12: false })}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                   <Chip
@@ -176,7 +176,7 @@ export default function OrderDetailPage() {
             <Box key={i} sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                 <Typography variant="subtitle2">
-                  Delivery {i + 1}: {new Date(d.deliveryTime).toLocaleString()}
+                  Delivery {i + 1}: {new Date(d.deliveryTime).toLocaleString(undefined, { hour12: false })}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                   <Chip
