@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Chip,
+  Link,
   Paper,
   Table,
   TableBody,
@@ -73,7 +74,16 @@ export default function OrdersPage() {
                 onClick={() => navigate(`/orders/${o.id}`)}
               >
                 <TableCell>{o.id}</TableCell>
-                <TableCell>{o.userCompany}</TableCell>
+                <TableCell>
+                  <Link
+                    component="button"
+                    variant="body2"
+                    onClick={(e) => { e.stopPropagation(); navigate(`/buyers/${o.userBuyerId}`); }}
+                    underline="hover"
+                  >
+                    {o.userBuyerName}
+                  </Link>
+                </TableCell>
                 <TableCell>{o.userEmail}</TableCell>
                 <TableCell>
                   <Chip size="small" label={o.isConfirmed ? 'Yes' : 'No'} color={o.isConfirmed ? 'success' : 'warning'} />

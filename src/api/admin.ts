@@ -40,6 +40,8 @@ export interface User {
 export interface Order {
   id: number;
   userCompany: string;
+  userBuyerId: string;
+  userBuyerName: string;
   userEmail: string;
   isConfirmed: boolean;
   paymentStatus: string;
