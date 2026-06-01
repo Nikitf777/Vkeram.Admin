@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Paper,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -17,14 +18,15 @@ import type { Buyer } from '../api/admin';
 export default function BuyersPage() {
   const navigate = useNavigate();
   const [buyers, setBuyers] = useState<Buyer[]>([]);
+  const [onlyWithUsers, setOnlyWithUsers] = useState(false);
 
   const load = useCallback(async () => {
     try {
-      setBuyers(await fetchBuyers());
+      setBuyers(await fetchBuyers(onlyWithUsers));
     } catch {
       /* ignore */
     }
-  }, []);
+  }, [onlyWithUsers]);
 
   useEffect(() => {
     load();
@@ -32,7 +34,13 @@ export default function BuyersPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 3 }}>Buyers</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h5">Buyers</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2">Only with registered users</Typography>
+          <Switch checked={onlyWithUsers} onChange={(e) => setOnlyWithUsers(e.target.checked)} />
+        </Box>
+      </Box>
 
       <TableContainer component={Paper}>
         <Table size="small">

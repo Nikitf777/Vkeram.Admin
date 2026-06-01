@@ -547,8 +547,9 @@ const buyersRequest = async <T>(path: string, options?: RequestInit): Promise<T>
   return data;
 };
 
-export async function fetchBuyers(): Promise<Buyer[]> {
-  const data = await buyersRequest<{ success: boolean; buyers: Buyer[] }>('');
+export async function fetchBuyers(onlyWithUsers?: boolean): Promise<Buyer[]> {
+  const params = onlyWithUsers ? '?onlyWithUsers=true' : '';
+  const data = await buyersRequest<{ success: boolean; buyers: Buyer[] }>(params);
   return data.buyers;
 }
 
