@@ -534,6 +534,21 @@ export interface Buyer {
   registeredUsers: number;
 }
 
+export interface BuyerUser {
+  id: number;
+  contactName: string;
+  contactEmail: string;
+  phone: string | null;
+  createdAt: string;
+  isActive: boolean;
+}
+
+export interface BuyerDetail {
+  id: string;
+  name: string;
+  users: BuyerUser[];
+}
+
 const buyersRequest = async <T>(path: string, options?: RequestInit): Promise<T> => {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   const key = localStorage.getItem('adminKey');
@@ -596,7 +611,7 @@ export async function fetchDeliveries(minDate?: string, maxDate?: string): Promi
   return data.deliveries;
 }
 
-export async function fetchBuyerDetail(id: string): Promise<Record<string, unknown>> {
-  const data = await buyersRequest<{ success: boolean; buyer: Record<string, unknown> }>(`/${encodeURIComponent(id)}`);
+export async function fetchBuyerDetail(id: string): Promise<BuyerDetail> {
+  const data = await buyersRequest<{ success: boolean; buyer: BuyerDetail }>(`/${encodeURIComponent(id)}`);
   return data.buyer;
 }
