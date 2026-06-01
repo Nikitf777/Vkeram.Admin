@@ -31,7 +31,7 @@ export default function InvitesPage() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const lastClickedRef = useRef<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [count, setCount] = useState(5);
+  const [count, setCount] = useState(1);
   const [buyerId, setBuyerId] = useState('');
   const [buyers, setBuyers] = useState<Buyer[]>([]);
   const [expiresInDays, setExpiresInDays] = useState(30);
