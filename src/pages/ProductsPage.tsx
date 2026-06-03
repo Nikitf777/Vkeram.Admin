@@ -47,7 +47,7 @@ export default function ProductsPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 3 }}>Products</Typography>
+      <Typography variant="h5" sx={{ mb: 3 }}>Товары</Typography>
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -59,10 +59,10 @@ export default function ProductsPage() {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell align="right">Latest Price</TableCell>
-              <TableCell align="right">VAT</TableCell>
-              <TableCell align="center">Hidden</TableCell>
+              <TableCell>Название</TableCell>
+              <TableCell align="right">Последняя цена</TableCell>
+              <TableCell align="right">НДС</TableCell>
+              <TableCell align="center">Скрыт</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

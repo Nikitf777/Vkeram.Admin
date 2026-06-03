@@ -34,19 +34,19 @@ export default function UsersPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 3 }}>Registered Users</Typography>
+      <Typography variant="h5" sx={{ mb: 3 }}>Зарегистрированные пользователи</Typography>
 
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Company</TableCell>
-              <TableCell>Contact Name</TableCell>
+              <TableCell>Компания</TableCell>
+              <TableCell>Контактное лицо</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Registered</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell>Телефон</TableCell>
+              <TableCell>Зарегистрирован</TableCell>
+              <TableCell>Статус</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -63,7 +63,7 @@ export default function UsersPage() {
                 <TableCell>{u.phone || '-'}</TableCell>
                 <TableCell>{new Date(u.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <Chip size="small" label={u.isActive ? 'Active' : 'Inactive'} color={u.isActive ? 'success' : 'default'} />
+                  <Chip size="small" label={u.isActive ? 'Активен' : 'Неактивен'} color={u.isActive ? 'success' : 'default'} />
                 </TableCell>
               </TableRow>
             ))}

@@ -54,7 +54,7 @@ export default function OrderDetailPage() {
       const updated = await fetchOrderDetail(Number(orderId))
       setOrder(updated)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to confirm order')
+      setError(err instanceof Error ? err.message : 'Ошибка подтверждения заказа')
     } finally {
       setConfirming(false)
     }
@@ -68,7 +68,7 @@ export default function OrderDetailPage() {
       const updated = await fetchOrderDetail(Number(orderId))
       setOrder(updated)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update payment status')
+      setError(err instanceof Error ? err.message : 'Ошибка обновления статуса оплаты')
     } finally {
       setUpdatingPayment(false)
     }
@@ -81,7 +81,7 @@ export default function OrderDetailPage() {
       const updated = await fetchOrderDetail(Number(orderId))
       setOrder(updated)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update reservation')
+      setError(err instanceof Error ? err.message : 'Ошибка обновления бронирования')
     }
   }
 
@@ -92,7 +92,7 @@ export default function OrderDetailPage() {
       const updated = await fetchOrderDetail(Number(orderId))
       setOrder(updated)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update delivery')
+      setError(err instanceof Error ? err.message : 'Ошибка обновления доставки')
     }
   }
 
@@ -102,7 +102,7 @@ export default function OrderDetailPage() {
 
   return (
     <Box>
-      <Button onClick={() => navigate(-1)} sx={{ mb: 2 }}>&larr; Back</Button>
+      <Button onClick={() => navigate(-1)} sx={{ mb: 2 }}>&larr; Назад</Button>
       <Paper sx={{ p: 3, mb: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Box>
@@ -129,14 +129,14 @@ export default function OrderDetailPage() {
               onClick={handleConfirm}
               disabled={confirming}
             >
-              {confirming ? 'Confirming...' : 'Confirm Order'}
+              {confirming ? 'Подтверждение...' : 'Подтвердить заказ'}
             </Button>
           )}
         </Box>
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
-          <Chip label={`Confirmed: ${order.isConfirmed ? 'Yes' : 'No'}`} color={order.isConfirmed ? 'success' : 'warning'} />
+          <Chip label={`Подтверждён: ${order.isConfirmed ? 'Да' : 'Нет'}`} color={order.isConfirmed ? 'success' : 'warning'} />
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <Typography variant="body2">Payment:</Typography>
+            <Typography variant="body2">Оплата:</Typography>
             <Select
               size="small"
               value={order.paymentStatus ?? 'Unpaid'}
@@ -144,36 +144,36 @@ export default function OrderDetailPage() {
               onChange={(e) => handlePaymentStatusChange(e.target.value)}
               sx={{ minWidth: 140 }}
             >
-              <MenuItem value="Paid">Paid</MenuItem>
-              <MenuItem value="PartiallyPaid">Partially Paid</MenuItem>
-              <MenuItem value="Unpaid">Unpaid</MenuItem>
+              <MenuItem value="Paid">Оплачен</MenuItem>
+              <MenuItem value="PartiallyPaid">Частично оплачен</MenuItem>
+              <MenuItem value="Unpaid">Не оплачен</MenuItem>
             </Select>
           </Box>
-          <Chip label={`Shipment: ${order.shipmentStatus}`} color={statusColor[order.shipmentStatus ?? ''] || 'default'} />
+          <Chip label={`Отгрузка: ${order.shipmentStatus}`} color={statusColor[order.shipmentStatus ?? ''] || 'default'} />
         </Box>
         <Typography variant="body2" color="text.secondary">
-            Created: {order.createdAt ? new Date(order.createdAt).toLocaleString(undefined, { hour12: false }) : '-'}
+            Создан: {order.createdAt ? new Date(order.createdAt).toLocaleString(undefined, { hour12: false }) : '-'}
         </Typography>
         <Typography variant="body2">
-          User ID: {order.userId}
+          ID пользователя: {order.userId}
         </Typography>
         <Typography variant="body2">
-          Total: {order.totalQuantity} items for {order.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} (incl. VAT)
+          Итого: {order.totalQuantity} товаров на {order.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} (вкл. НДС)
         </Typography>
       </Paper>
 
       {order.reservations && order.reservations.length > 0 && (
         <Paper sx={{ p: 2, mb: 2 }}>
-          <Typography variant="h6" gutterBottom>Reservations</Typography>
+          <Typography variant="h6" gutterBottom>Бронирования</Typography>
           {order.reservations.map((r, i) => (
             <Box key={i} sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                 <Typography variant="subtitle2">
-                  Slot {i + 1}: {new Date(r.startTime).toLocaleString(undefined, { hour12: false })} - {new Date(r.endTime).toLocaleString(undefined, { hour12: false })}
+                    Слот {i + 1}: {new Date(r.startTime).toLocaleString(undefined, { hour12: false })} - {new Date(r.endTime).toLocaleString(undefined, { hour12: false })}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                   <Chip
-                    label={r.picked ? 'Picked' : 'Not Picked'}
+                    label={r.picked ? 'Собран' : 'Не собран'}
                     color={r.picked ? 'success' : 'warning'}
                     size="small"
                   />
@@ -182,7 +182,7 @@ export default function OrderDetailPage() {
                     variant="outlined"
                     onClick={() => handleUpdateReservationStatus(r.id, r.picked)}
                   >
-                    {r.picked ? 'Mark as Not Picked' : 'Mark as Picked'}
+                    {r.picked ? 'Отметить как не собран' : 'Отметить как собран'}
                   </Button>
                 </Box>
               </Box>
@@ -191,11 +191,11 @@ export default function OrderDetailPage() {
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Product</TableCell>
-                        <TableCell align="right">Qty</TableCell>
-                        <TableCell align="right">VAT</TableCell>
-                        <TableCell align="right">Price</TableCell>
-                        <TableCell align="right">Total</TableCell>
+                         <TableCell>Товар</TableCell>
+                         <TableCell align="right">Кол-во</TableCell>
+                         <TableCell align="right">НДС</TableCell>
+                         <TableCell align="right">Цена</TableCell>
+                         <TableCell align="right">Итого</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -219,16 +219,16 @@ export default function OrderDetailPage() {
 
       {order.deliveries && order.deliveries.length > 0 && (
         <Paper sx={{ p: 2 }}>
-          <Typography variant="h6" gutterBottom>Deliveries</Typography>
+          <Typography variant="h6" gutterBottom>Доставки</Typography>
           {order.deliveries.map((d, i) => (
             <Box key={i} sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                 <Typography variant="subtitle2">
-                  Delivery {i + 1}: {new Date(d.deliveryTime).toLocaleString(undefined, { hour12: false })}
+                  Доставка {i + 1}: {new Date(d.deliveryTime).toLocaleString(undefined, { hour12: false })}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                   <Chip
-                    label={d.delivered ? 'Delivered' : 'Not Delivered'}
+                    label={d.delivered ? 'Доставлен' : 'Не доставлен'}
                     color={d.delivered ? 'success' : 'warning'}
                     size="small"
                   />
@@ -237,7 +237,7 @@ export default function OrderDetailPage() {
                     variant="outlined"
                     onClick={() => handleUpdateDeliveryStatus(d.id, d.delivered)}
                   >
-                    {d.delivered ? 'Mark as Not Delivered' : 'Mark as Delivered'}
+                    {d.delivered ? 'Отметить как не доставлен' : 'Отметить как доставлен'}
                   </Button>
                 </Box>
               </Box>
@@ -246,11 +246,11 @@ export default function OrderDetailPage() {
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                        <TableCell>Product</TableCell>
-                        <TableCell align="right">Qty</TableCell>
-                        <TableCell align="right">VAT</TableCell>
-                        <TableCell align="right">Price</TableCell>
-                        <TableCell align="right">Total</TableCell>
+                         <TableCell>Товар</TableCell>
+                         <TableCell align="right">Кол-во</TableCell>
+                         <TableCell align="right">НДС</TableCell>
+                         <TableCell align="right">Цена</TableCell>
+                         <TableCell align="right">Итого</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>

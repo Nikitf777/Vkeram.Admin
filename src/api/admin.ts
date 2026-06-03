@@ -10,7 +10,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     headers: { ...headers, ...(options?.headers as Record<string, string>) },
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || `Request failed (${res.status})`);
+  if (!res.ok) throw new Error(data.message || `Запрос не выполнен (${res.status})`);
   return data;
 }
 
@@ -166,7 +166,7 @@ export interface ProductPriceEntry {
 export async function fetchProducts(): Promise<ProductWithPrice[]> {
   const url = `${API_BASE}/api/products`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch products (${res.status})`);
+  if (!res.ok) throw new Error(`Ошибка загрузки товаров (${res.status})`);
   return res.json();
 }
 
@@ -214,7 +214,7 @@ export function getImageUrl(productId: string, imageId: number): string {
 export async function fetchProductImages(productId: string): Promise<ProductImage[]> {
   const url = `${API_BASE}/api/products/${encodeURIComponent(productId)}/images`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch images (${res.status})`);
+  if (!res.ok) throw new Error(`Ошибка загрузки изображений (${res.status})`);
   return res.json();
 }
 
@@ -228,7 +228,7 @@ export async function uploadProductImage(productId: string, file: File): Promise
   });
   if (!res.ok) {
     const data = await res.json().catch(() => null);
-    throw new Error(data?.message || `Upload failed (${res.status})`);
+    throw new Error(data?.message || `Ошибка загрузки (${res.status})`);
   }
 }
 
@@ -392,7 +392,7 @@ export async function updateMaximumDeliveryDays(settings: DaysSettings): Promise
 
 export async function fetchAllowBooking(): Promise<{ id: number; isAllowed: boolean }> {
   const res = await fetch(`${API_BASE}/api/Orders/allow-booking`);
-  if (!res.ok) throw new Error(`Failed to fetch allow booking (${res.status})`);
+  if (!res.ok) throw new Error(`Ошибка загрузки настройки бронирования (${res.status})`);
   const data = await res.json();
   return data.allowBooking;
 }
@@ -406,7 +406,7 @@ export async function updateAllowBooking(isAllowed: boolean): Promise<void> {
 
 export async function fetchAllowDelivery(): Promise<{ id: number; isAllowed: boolean }> {
   const res = await fetch(`${API_BASE}/api/Orders/allow-delivery`);
-  if (!res.ok) throw new Error(`Failed to fetch allow delivery (${res.status})`);
+  if (!res.ok) throw new Error(`Ошибка загрузки настройки доставки (${res.status})`);
   const data = await res.json();
   return data.allowDelivery;
 }
@@ -564,7 +564,7 @@ const buyersRequest = async <T>(path: string, options?: RequestInit): Promise<T>
     headers: { ...headers, ...(options?.headers as Record<string, string>) },
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || `Request failed (${res.status})`);
+  if (!res.ok) throw new Error(data.message || `Запрос не выполнен (${res.status})`);
   return data;
 };
 

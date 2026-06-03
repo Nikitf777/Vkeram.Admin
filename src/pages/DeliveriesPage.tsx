@@ -36,11 +36,11 @@ export default function DeliveriesPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 3 }}>Deliveries</Typography>
+      <Typography variant="h5" sx={{ mb: 3 }}>Доставки</Typography>
 
       <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
         <TextField
-          label="Min Date"
+          label="Дата от"
           type="datetime-local"
           size="small"
           slotProps={{ inputLabel: { shrink: true } }}
@@ -48,7 +48,7 @@ export default function DeliveriesPage() {
           onChange={(e) => setMinDate(e.target.value)}
         />
         <TextField
-          label="Max Date"
+          label="Дата до"
           type="datetime-local"
           size="small"
           slotProps={{ inputLabel: { shrink: true } }}
@@ -62,10 +62,10 @@ export default function DeliveriesPage() {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Delivery Time</TableCell>
-              <TableCell>Delivered</TableCell>
-              <TableCell>Order ID</TableCell>
-              <TableCell>Confirmed</TableCell>
+              <TableCell>Время доставки</TableCell>
+              <TableCell>Доставлен</TableCell>
+              <TableCell>ID заказа</TableCell>
+              <TableCell>Подтверждён</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -76,7 +76,7 @@ export default function DeliveriesPage() {
                 <TableCell>
                   <Chip
                     size="small"
-                    label={d.delivered ? 'Yes' : 'No'}
+                    label={d.delivered ? 'Да' : 'Нет'}
                     color={d.delivered ? 'success' : 'warning'}
                   />
                 </TableCell>
@@ -84,7 +84,7 @@ export default function DeliveriesPage() {
                 <TableCell>
                   <Chip
                     size="small"
-                    label={d.isConfirmed ? 'Yes' : 'No'}
+                    label={d.isConfirmed ? 'Да' : 'Нет'}
                     color={d.isConfirmed ? 'success' : 'warning'}
                   />
                 </TableCell>

@@ -118,23 +118,23 @@ function DefaultWorkingHoursCard() {
   return (
     <Card>
       <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-        <Typography sx={{ minWidth: 200, fontWeight: 500 }}>Default Working Hours</Typography>
+        <Typography sx={{ minWidth: 200, fontWeight: 500 }}>Рабочие часы по умолчанию</Typography>
         <TimeField
-          label="Start"
+          label="Начало"
           value={item.current.startTime}
           onChange={(v) => setCurrent({ ...item.current, startTime: v })}
         />
         <TimeField
-          label="End"
+          label="Конец"
           value={item.current.endTime}
           onChange={(v) => setCurrent({ ...item.current, endTime: v })}
         />
         <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
           <Button size="small" variant="outlined" onClick={handleCancel} disabled={!item.changed || item.saving}>
-            Cancel
+            Отмена
           </Button>
           <Button size="small" variant="contained" onClick={handleSave} disabled={!item.changed || item.saving}>
-            {item.saving ? 'Saving…' : 'Confirm'}
+            {item.saving ? 'Сохранение...' : 'Подтвердить'}
           </Button>
         </Box>
       </CardContent>
@@ -170,14 +170,14 @@ function BreaksCard() {
   useEffect(() => { load(); }, [load]);
 
   const validateBreak = (start: string, end: string, skipId?: number): string => {
-    if (!start || !end) return 'Both start and end times are required.';
-    if (start >= end) return 'Start time must be before end time.';
-    if (whStart && start <= whStart) return 'Break start must not be earlier than working hours start.';
-    if (whEnd && end >= whEnd) return 'Break end must not be later than working hours end.';
+    if (!start || !end) return 'Необходимо указать время начала и окончания.';
+    if (start >= end) return 'Время начала должно быть раньше времени окончания.';
+    if (whStart && start <= whStart) return 'Начало перерыва не может быть раньше начала рабочего дня.';
+    if (whEnd && end >= whEnd) return 'Окончание перерыва не может быть позже окончания рабочего дня.';
     for (const b of breaks) {
       if (b.id === skipId) continue;
-      if (start < b.endTime && end > b.startTime) return 'Break overlaps with an existing break.';
-      if (end === b.startTime || start === b.endTime) return 'Breaks must not be directly adjacent to each other.';
+      if (start < b.endTime && end > b.startTime) return 'Перерыв пересекается с существующим перерывом.';
+      if (end === b.startTime || start === b.endTime) return 'Перерывы не должны быть непосредственно рядом друг с другом.';
     }
     return '';
   };
@@ -218,7 +218,7 @@ function BreaksCard() {
     <Card>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography sx={{ fontWeight: 500 }}>Breaks</Typography>
+          <Typography sx={{ fontWeight: 500 }}>Перерывы</Typography>
           <Box sx={{ flex: 1 }} />
           <IconButton size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
@@ -228,7 +228,7 @@ function BreaksCard() {
           <Box sx={{ display: 'flex', gap: 2, mt: 2, alignItems: 'center', flexWrap: 'wrap' }}>
             <TimeField label="Start" value={newStart} onChange={(v) => { setNewStart(v); setAddError(''); }} error={!!addError} />
             <TimeField label="End" value={newEnd} onChange={(v) => { setNewEnd(v); setAddError(''); }} error={!!addError} />
-            <Button size="small" variant="contained" onClick={handleAdd} disabled={!!validateBreak(newStart, newEnd)}>Add</Button>
+            <Button size="small" variant="contained" onClick={handleAdd} disabled={!!validateBreak(newStart, newEnd)}>Добавить</Button>
           </Box>
           {addError && <Typography color="error" variant="caption" sx={{ mt: 1, display: 'block' }}>{addError}</Typography>}
           {breaks.length > 0 && (
@@ -236,9 +236,9 @@ function BreaksCard() {
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Start</TableCell>
-                    <TableCell>End</TableCell>
-                    <TableCell align="right">Actions</TableCell>
+                    <TableCell>Начало</TableCell>
+                    <TableCell>Конец</TableCell>
+                    <TableCell align="right">Действия</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -253,8 +253,8 @@ function BreaksCard() {
                             <TimeField value={editEnd} onChange={(v) => { setEditEnd(v); setEditError(''); }} error={!!editError} />
                           </TableCell>
                           <TableCell align="right">
-                            <Button size="small" onClick={() => handleSaveEdit(b.id)} disabled={!!validateBreak(editStart, editEnd, b.id)}>Save</Button>
-                            <Button size="small" onClick={() => setEditId(null)}>Cancel</Button>
+                            <Button size="small" onClick={() => handleSaveEdit(b.id)} disabled={!!validateBreak(editStart, editEnd, b.id)}>Сохранить</Button>
+                            <Button size="small" onClick={() => setEditId(null)}>Отмена</Button>
                           </TableCell>
                         </>
                       ) : (
@@ -262,7 +262,7 @@ function BreaksCard() {
                           <TableCell>{b.startTime}</TableCell>
                           <TableCell>{b.endTime}</TableCell>
                           <TableCell align="right">
-                            <Button size="small" onClick={() => { setEditId(b.id); setEditStart(b.startTime); setEditEnd(b.endTime); setEditError(''); }}>Edit</Button>
+                            <Button size="small" onClick={() => { setEditId(b.id); setEditStart(b.startTime); setEditEnd(b.endTime); setEditError(''); }}>Редактировать</Button>
                             <IconButton size="small" color="error" onClick={() => handleDelete(b.id)}><DeleteIcon fontSize="small" /></IconButton>
                           </TableCell>
                         </>
@@ -315,7 +315,7 @@ function DaysCard({ title, fetcher, updater }: { title: string; fetcher: () => P
         <Typography sx={{ minWidth: 200, fontWeight: 500 }}>{title}</Typography>
         <TextField
           size="small"
-          label="Days"
+          label="Дни"
           type="number"
           value={item.current.days}
           onChange={(e) => setCurrent({ ...item.current, days: Math.max(1, parseInt(e.target.value) || 1) })}
@@ -329,14 +329,14 @@ function DaysCard({ title, fetcher, updater }: { title: string; fetcher: () => P
               onChange={(e) => setCurrent({ ...item.current, countWorkingDaysOnly: e.target.checked })}
             />
           }
-          label="Working days only"
+          label="Только рабочие дни"
         />
         <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
           <Button size="small" variant="outlined" onClick={handleCancel} disabled={!item.changed || item.saving}>
-            Cancel
+            Отмена
           </Button>
           <Button size="small" variant="contained" onClick={handleSave} disabled={!item.changed || item.saving}>
-            {item.saving ? 'Saving…' : 'Confirm'}
+            {item.saving ? 'Сохранение...' : 'Подтвердить'}
           </Button>
         </Box>
       </CardContent>
@@ -373,7 +373,7 @@ function TimeField({ value, onChange, label, size, sx, error }: {
   );
 }
 
-function AllowCard({ title, fetcher, updater, enabledLabel = 'Allowed', disabledLabel = 'Not allowed' }: { title: string; fetcher: () => Promise<boolean>; updater: (v: boolean) => Promise<void>; enabledLabel?: string; disabledLabel?: string }) {
+function AllowCard({ title, fetcher, updater, enabledLabel = 'Разрешено', disabledLabel = 'Запрещено' }: { title: string; fetcher: () => Promise<boolean>; updater: (v: boolean) => Promise<void>; enabledLabel?: string; disabledLabel?: string }) {
   const [original, setOriginal] = useState(true);
   const [current, setCurrent] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -419,10 +419,10 @@ function AllowCard({ title, fetcher, updater, enabledLabel = 'Allowed', disabled
         />
         <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
           <Button size="small" variant="outlined" onClick={() => setCurrent(original)} disabled={!changed || saving}>
-            Cancel
+            Отмена
           </Button>
           <Button size="small" variant="contained" onClick={handleSave} disabled={!changed || saving}>
-            {saving ? 'Saving…' : 'Confirm'}
+            {saving ? 'Сохранение...' : 'Подтвердить'}
           </Button>
         </Box>
       </CardContent>
@@ -472,7 +472,7 @@ function DurationCard({ title, fetcher, updater }: { title: string; fetcher: () 
         <Typography sx={{ minWidth: 200, fontWeight: 500 }}>{title}</Typography>
         <TextField
           size="small"
-          label="Minutes"
+          label="Минуты"
           type="number"
           value={current}
           onChange={(e) => setCurrent(Math.max(1, Math.min(480, parseInt(e.target.value) || 1)))}
@@ -481,10 +481,10 @@ function DurationCard({ title, fetcher, updater }: { title: string; fetcher: () 
         />
         <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
           <Button size="small" variant="outlined" onClick={() => setCurrent(original)} disabled={!changed || saving}>
-            Cancel
+            Отмена
           </Button>
           <Button size="small" variant="contained" onClick={handleSave} disabled={!changed || saving}>
-            {saving ? 'Saving…' : 'Confirm'}
+            {saving ? 'Сохранение...' : 'Подтвердить'}
           </Button>
         </Box>
       </CardContent>
@@ -554,7 +554,7 @@ function OrderLimitsCard() {
     <Card>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography sx={{ fontWeight: 500 }}>Order Limits</Typography>
+          <Typography sx={{ fontWeight: 500 }}>Лимиты заказов</Typography>
           <Box sx={{ flex: 1 }} />
           <IconButton size="small" onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
@@ -562,42 +562,42 @@ function OrderLimitsCard() {
         </Box>
         <Collapse in={open}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-            <Typography variant="subtitle2" color="text.secondary">Order Price</Typography>
+            <Typography variant="subtitle2" color="text.secondary">Сумма заказа</Typography>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <TextField size="small" label="Min Price" type="number" value={current.minOrderPrice} onChange={(e) => updateField('minOrderPrice', parseFloat(e.target.value) || 0)} sx={{ width: 140 }} />
-              <TextField size="small" label="Max Price" type="number" value={current.maxOrderPrice} onChange={(e) => updateField('maxOrderPrice', parseFloat(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Мин. сумма" type="number" value={current.minOrderPrice} onChange={(e) => updateField('minOrderPrice', parseFloat(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Макс. сумма" type="number" value={current.maxOrderPrice} onChange={(e) => updateField('maxOrderPrice', parseFloat(e.target.value) || 0)} sx={{ width: 140 }} />
             </Box>
 
-            <Typography variant="subtitle2" color="text.secondary">Order Quantity</Typography>
+            <Typography variant="subtitle2" color="text.secondary">Количество заказа</Typography>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <TextField size="small" label="Min Quantity" type="number" value={current.minOrderQuantity} onChange={(e) => updateField('minOrderQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
-              <TextField size="small" label="Max Quantity" type="number" value={current.maxOrderQuantity} onChange={(e) => updateField('maxOrderQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Мин. кол-во" type="number" value={current.minOrderQuantity} onChange={(e) => updateField('minOrderQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Макс. кол-во" type="number" value={current.maxOrderQuantity} onChange={(e) => updateField('maxOrderQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
             </Box>
 
-            <Typography variant="subtitle2" color="text.secondary">Reservation Quantity</Typography>
+            <Typography variant="subtitle2" color="text.secondary">Количество бронирования</Typography>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <TextField size="small" label="Min Quantity" type="number" value={current.minReservationQuantity} onChange={(e) => updateField('minReservationQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
-              <TextField size="small" label="Max Quantity" type="number" value={current.maxReservationQuantity} onChange={(e) => updateField('maxReservationQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Мин. кол-во" type="number" value={current.minReservationQuantity} onChange={(e) => updateField('minReservationQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Макс. кол-во" type="number" value={current.maxReservationQuantity} onChange={(e) => updateField('maxReservationQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
             </Box>
 
-            <Typography variant="subtitle2" color="text.secondary">Delivery Quantity</Typography>
+            <Typography variant="subtitle2" color="text.secondary">Количество доставки</Typography>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <TextField size="small" label="Min Quantity" type="number" value={current.minDeliveryQuantity} onChange={(e) => updateField('minDeliveryQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
-              <TextField size="small" label="Max Quantity" type="number" value={current.maxDeliveryQuantity} onChange={(e) => updateField('maxDeliveryQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Мин. кол-во" type="number" value={current.minDeliveryQuantity} onChange={(e) => updateField('minDeliveryQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Макс. кол-во" type="number" value={current.maxDeliveryQuantity} onChange={(e) => updateField('maxDeliveryQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
             </Box>
 
-            <Typography variant="subtitle2" color="text.secondary">Product Reservation Quantity</Typography>
+            <Typography variant="subtitle2" color="text.secondary">Количество товара в бронировании</Typography>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <TextField size="small" label="Min Quantity" type="number" value={current.minProductReservationQuantity} onChange={(e) => updateField('minProductReservationQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
-              <TextField size="small" label="Max Quantity" type="number" value={current.maxProductReservationQuantity} onChange={(e) => updateField('maxProductReservationQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Мин. кол-во" type="number" value={current.minProductReservationQuantity} onChange={(e) => updateField('minProductReservationQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
+              <TextField size="small" label="Макс. кол-во" type="number" value={current.maxProductReservationQuantity} onChange={(e) => updateField('maxProductReservationQuantity', parseInt(e.target.value) || 0)} sx={{ width: 140 }} />
             </Box>
 
             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', mt: 2 }}>
               <Button size="small" variant="outlined" onClick={handleCancel} disabled={!changed || saving}>
-                Cancel
+                Отмена
               </Button>
               <Button size="small" variant="contained" onClick={handleSave} disabled={!changed || saving}>
-                {saving ? 'Saving…' : 'Confirm'}
+                {saving ? 'Сохранение...' : 'Подтвердить'}
               </Button>
             </Box>
           </Box>
@@ -661,7 +661,7 @@ function AutoConfirmOrdersCard() {
     <Card>
       <CardContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Typography sx={{ fontWeight: 500 }}>Auto-Confirm Orders</Typography>
+          <Typography sx={{ fontWeight: 500 }}>Автоподтверждение заказов</Typography>
 
           <FormControlLabel
             control={
@@ -670,13 +670,13 @@ function AutoConfirmOrdersCard() {
                 onChange={(e) => updateField('isEnabled', e.target.checked)}
               />
             }
-            label={current.isEnabled ? 'Enabled' : 'Disabled'}
+            label={current.isEnabled ? 'Включено' : 'Выключено'}
           />
 
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
             <TextField
               size="small"
-              label="Max Price"
+              label="Макс. цена"
               type="number"
               value={current.maxAutoConfirmPrice}
               onChange={(e) => updateField('maxAutoConfirmPrice', parseFloat(e.target.value) || 0)}
@@ -684,7 +684,7 @@ function AutoConfirmOrdersCard() {
             />
             <TextField
               size="small"
-              label="Max Quantity"
+              label="Макс. кол-во"
               type="number"
               value={current.maxAutoConfirmQuantity}
               onChange={(e) => updateField('maxAutoConfirmQuantity', parseInt(e.target.value) || 0)}
@@ -694,10 +694,10 @@ function AutoConfirmOrdersCard() {
 
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', mt: 2 }}>
             <Button size="small" variant="outlined" onClick={handleCancel} disabled={!changed || saving}>
-              Cancel
+              Отмена
             </Button>
             <Button size="small" variant="contained" onClick={handleSave} disabled={!changed || saving}>
-              {saving ? 'Saving…' : 'Confirm'}
+              {saving ? 'Сохранение...' : 'Подтвердить'}
             </Button>
           </Box>
         </Box>
@@ -709,40 +709,40 @@ function AutoConfirmOrdersCard() {
 export default function SettingsPage() {
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 3 }}>Settings</Typography>
+      <Typography variant="h5" sx={{ mb: 3 }}>Настройки</Typography>
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <DefaultWorkingHoursCard />
         <BreaksCard />
 
         <AllowCard
-          title="Allow Booking"
+          title="Разрешить бронирование"
           fetcher={useCallback(async () => { const d = await fetchAllowBooking(); return d.isAllowed; }, [])}
           updater={useCallback(async (v: boolean) => { await updateAllowBooking(v); }, [])}
         />
 
         <AllowCard
-          title="Allow Delivery"
+          title="Разрешить доставку"
           fetcher={useCallback(async () => { const d = await fetchAllowDelivery(); return d.isAllowed; }, [])}
           updater={useCallback(async (v: boolean) => { await updateAllowDelivery(v); }, [])}
         />
 
         <AllowCard
-          title="Hide Products Without Price"
+          title="Скрывать товары без цены"
           fetcher={useCallback(async () => { const d = await fetchHideProductsWithoutPrice(); return d.isEnabled; }, [])}
           updater={useCallback(async (v: boolean) => { await updateHideProductsWithoutPrice(v); }, [])}
-          enabledLabel="Hidden"
-          disabledLabel="Not hidden"
+          enabledLabel="Скрыт"
+          disabledLabel="Не скрыт"
         />
 
         <DurationCard
-          title="Reservation Duration"
+          title="Длительность бронирования"
           fetcher={useCallback(async () => { const d = await fetchReservationDuration(); return d.durationMinutes; }, [])}
           updater={useCallback(async (v: number) => { await updateReservationDuration(v); }, [])}
         />
 
         <DaysCard
-          title="Minimum Booking Days"
+          title="Мин. дней для бронирования"
           fetcher={useCallback(async () => {
             const d = await fetchMinimumBookingDays();
             return { days: d.days, countWorkingDaysOnly: d.countWorkingDaysOnly };
@@ -751,7 +751,7 @@ export default function SettingsPage() {
         />
 
         <DaysCard
-          title="Minimum Delivery Days"
+          title="Мин. дней для доставки"
           fetcher={useCallback(async () => {
             const d = await fetchMinimumDeliveryDays();
             return { days: d.days, countWorkingDaysOnly: d.countWorkingDaysOnly };
@@ -760,7 +760,7 @@ export default function SettingsPage() {
         />
 
         <DaysCard
-          title="Maximum Booking Days"
+          title="Макс. дней для бронирования"
           fetcher={useCallback(async () => {
             const d = await fetchMaximumBookingDays();
             return { days: d.days, countWorkingDaysOnly: d.countWorkingDaysOnly };
@@ -769,7 +769,7 @@ export default function SettingsPage() {
         />
 
         <DaysCard
-          title="Maximum Delivery Days"
+          title="Макс. дней для доставки"
           fetcher={useCallback(async () => {
             const d = await fetchMaximumDeliveryDays();
             return { days: d.days, countWorkingDaysOnly: d.countWorkingDaysOnly };

@@ -150,15 +150,15 @@ export default function InvitesPage() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5">Invite Codes</Typography>
+        <Typography variant="h5">Коды приглашений</Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           {selected.size > 0 && (
             <Button variant="contained" color="error" disabled={!canRevoke} onClick={handleRevoke}>
-              Revoke ({selected.size})
+              Отозвать ({selected.size})
             </Button>
           )}
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => { setCreatedCodes(null); setDialogOpen(true); }}>
-            Create Invites
+            Создать приглашения
           </Button>
         </Box>
       </Box>
@@ -174,12 +174,12 @@ export default function InvitesPage() {
                   onChange={toggleAll}
                 />
               </TableCell>
-              <TableCell>Code</TableCell>
-              <TableCell>Buyer</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Created</TableCell>
-              <TableCell>Expires</TableCell>
-              <TableCell>Used By</TableCell>
+              <TableCell>Код</TableCell>
+              <TableCell>Покупатель</TableCell>
+              <TableCell>Статус</TableCell>
+              <TableCell>Создан</TableCell>
+              <TableCell>Истекает</TableCell>
+              <TableCell>Использован</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -188,7 +188,7 @@ export default function InvitesPage() {
               const isRevoked = inv.isRevoked;
               const isUsed = inv.isUsed;
               const disabled = isUsed || isRevoked;
-              const status = isUsed ? 'Used' : isRevoked ? 'Revoked' : 'Active';
+              const status = isUsed ? 'Использован' : isRevoked ? 'Отозван' : 'Активен';
               const color = isUsed ? 'default' : isRevoked ? 'error' : 'success' as const;
               return (
                 <TableRow
@@ -226,17 +226,17 @@ export default function InvitesPage() {
       </TableContainer>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Create Invite Codes</DialogTitle>
+        <DialogTitle>Создать коды приглашений</DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 0.5 }}>
             <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField fullWidth label="Count" type="number" value={count} onChange={(e) => setCount(Number(e.target.value))} slotProps={{ htmlInput: { min: 1, max: 100 } }} />
+              <TextField fullWidth label="Количество" type="number" value={count} onChange={(e) => setCount(Number(e.target.value))} slotProps={{ htmlInput: { min: 1, max: 100 } }} />
             </Grid>
             <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField fullWidth label="Expires (days)" type="number" value={expiresInDays} onChange={(e) => setExpiresInDays(Number(e.target.value))} slotProps={{ htmlInput: { min: 1 } }} />
+              <TextField fullWidth label="Срок (дней)" type="number" value={expiresInDays} onChange={(e) => setExpiresInDays(Number(e.target.value))} slotProps={{ htmlInput: { min: 1 } }} />
             </Grid>
             <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField fullWidth select label="Buyer" value={buyerId} onChange={(e) => setBuyerId(e.target.value)} required>
+              <TextField fullWidth select label="Покупатель" value={buyerId} onChange={(e) => setBuyerId(e.target.value)} required>
                 {buyers.map((b) => (
                   <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>
                 ))}
@@ -245,21 +245,21 @@ export default function InvitesPage() {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleCreate}>Create</Button>
+          <Button onClick={() => setDialogOpen(false)}>Отмена</Button>
+          <Button variant="contained" onClick={handleCreate}>Создать</Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={createdCodes !== null} onClose={() => setCreatedCodes(null)} maxWidth="sm" fullWidth>
-        <DialogTitle>Codes Created</DialogTitle>
+        <DialogTitle>Коды созданы</DialogTitle>
         <DialogContent>
           {createdCodes?.map((c) => (
             <Typography key={c} sx={{ fontFamily: 'monospace', mb: 0.5 }}>{c}</Typography>
           ))}
         </DialogContent>
         <DialogActions>
-          <Button startIcon={<ContentCopyIcon />} onClick={copyAll}>Copy All</Button>
-          <Button onClick={() => setCreatedCodes(null)}>Close</Button>
+          <Button startIcon={<ContentCopyIcon />} onClick={copyAll}>Копировать все</Button>
+          <Button onClick={() => setCreatedCodes(null)}>Закрыть</Button>
         </DialogActions>
       </Dialog>
     </Box>

@@ -56,39 +56,39 @@ export default function BuyerDetailPage() {
   }, [load]);
 
   if (loading) return <CircularProgress />;
-  if (!buyer) return <Typography>Buyer not found.</Typography>;
+  if (!buyer) return <Typography>Покупатель не найден.</Typography>;
 
   return (
     <Box>
       <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/buyers')} sx={{ mb: 2 }}>
-        Back to Buyers
+        Назад к покупателям
       </Button>
 
       <Typography variant="h5" sx={{ mb: 3 }}>{buyer.name}</Typography>
 
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
-        <Tab label={`Orders (${buyer.orders.length})`} />
-        <Tab label={`Users (${buyer.users.length})`} />
+        <Tab label={`Заказы (${buyer.orders.length})`} />
+        <Tab label={`Пользователи (${buyer.users.length})`} />
       </Tabs>
 
       {tab === 0 && (
         buyer.orders.length === 0 ? (
-          <Typography color="text.secondary">No orders yet.</Typography>
+          <Typography color="text.secondary">Заказов пока нет.</Typography>
         ) : (
           <TableContainer component={Paper}>
             <Table size="small">
               <TableHead>
                 <TableRow>
                   <TableCell>ID</TableCell>
-                  <TableCell>User</TableCell>
-                  <TableCell>Confirmation</TableCell>
-                  <TableCell>Payment</TableCell>
-                  <TableCell>Shipment</TableCell>
-                  <TableCell align="right">Reservations</TableCell>
-                  <TableCell align="right">Deliveries</TableCell>
-                  <TableCell align="right">Total Qty</TableCell>
-                  <TableCell align="right">Total Price</TableCell>
-                  <TableCell>Created</TableCell>
+                  <TableCell>Пользователь</TableCell>
+                  <TableCell>Подтверждение</TableCell>
+                  <TableCell>Оплата</TableCell>
+                  <TableCell>Отгрузка</TableCell>
+                  <TableCell align="right">Бронирования</TableCell>
+                  <TableCell align="right">Доставки</TableCell>
+                  <TableCell align="right">Всего кол-во</TableCell>
+                  <TableCell align="right">Общая сумма</TableCell>
+                  <TableCell>Создан</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -110,7 +110,7 @@ export default function BuyerDetailPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Chip size="small" label={o.isConfirmed ? 'Yes' : 'No'} color={o.isConfirmed ? 'success' : 'warning'} />
+                      <Chip size="small" label={o.isConfirmed ? 'Да' : 'Нет'} color={o.isConfirmed ? 'success' : 'warning'} />
                     </TableCell>
                     <TableCell>
                       <Chip size="small" label={o.paymentStatus} color={statusColor[o.paymentStatus] || 'default'} />
@@ -133,17 +133,17 @@ export default function BuyerDetailPage() {
 
       {tab === 1 && (
         buyer.users.length === 0 ? (
-          <Typography color="text.secondary">No registered users for this buyer.</Typography>
+          <Typography color="text.secondary">Нет зарегистрированных пользователей для этого покупателя.</Typography>
         ) : (
           <TableContainer component={Paper}>
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell>Name</TableCell>
+                  <TableCell>Имя</TableCell>
                   <TableCell>Email</TableCell>
-                  <TableCell>Phone</TableCell>
-                  <TableCell>Registered</TableCell>
-                  <TableCell>Status</TableCell>
+                  <TableCell>Телефон</TableCell>
+                  <TableCell>Зарегистрирован</TableCell>
+                  <TableCell>Статус</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -159,7 +159,7 @@ export default function BuyerDetailPage() {
                     <TableCell>{u.phone || '-'}</TableCell>
                     <TableCell>{new Date(u.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell>
-                      <Chip size="small" label={u.isActive ? 'Active' : 'Inactive'} color={u.isActive ? 'success' : 'default'} />
+                      <Chip size="small" label={u.isActive ? 'Активен' : 'Неактивен'} color={u.isActive ? 'success' : 'default'} />
                     </TableCell>
                   </TableRow>
                 ))}

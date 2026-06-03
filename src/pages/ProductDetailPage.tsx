@@ -41,20 +41,20 @@ import type { AdminProduct, ProductPriceEntry, ProductImage, ProductCharacterist
 
 function characteristicLabel(key: string): string {
   const map: Record<string, string> = {
-    sizeLengthMm: 'Size Length (mm)',
-    sizeWidthMm: 'Size Width (mm)',
-    sizeHeightMm: 'Size Height (mm)',
-    weightKg: 'Weight (kg)',
-    strengthGrade: 'Strength Grade',
-    frostResistance: 'Frost Resistance',
-    waterAbsorption: 'Water Absorption',
-    thermalConductivity: 'Thermal Conductivity (W/mK)',
-    radiationQuality: 'Radiation Quality',
-    quantityPerPallet: 'Quantity per Pallet',
-    standard: 'Standard',
-    color: 'Color',
-    brickType: 'Brick Type',
-    minimumOrderQuantity: 'Min Order Quantity',
+    sizeLengthMm: 'Длина (мм)',
+    sizeWidthMm: 'Ширина (мм)',
+    sizeHeightMm: 'Высота (мм)',
+    weightKg: 'Вес (кг)',
+    strengthGrade: 'Марка прочности',
+    frostResistance: 'Морозостойкость',
+    waterAbsorption: 'Водопоглощение',
+    thermalConductivity: 'Теплопроводность (Вт/мК)',
+    radiationQuality: 'Радиационное качество',
+    quantityPerPallet: 'Количество на поддоне',
+    standard: 'Стандарт',
+    color: 'Цвет',
+    brickType: 'Тип кирпича',
+    minimumOrderQuantity: 'Мин. кол-во заказа',
   };
   return map[key] ?? key;
 }
@@ -204,27 +204,27 @@ export default function ProductDetailPage() {
   ];
 
   if (loading) return <CircularProgress />;
-  if (!product) return <Typography>Product not found.</Typography>;
+  if (!product) return <Typography>Товар не найден.</Typography>;
 
   const displayCharFields: { key: keyof ProductCharacteristic; label: string }[] = [
-    { key: 'color', label: 'Color' },
-    { key: 'brickType', label: 'Brick Type' },
-    { key: 'sizeLengthMm', label: 'Size' },
-    { key: 'weightKg', label: 'Weight (kg)' },
-    { key: 'strengthGrade', label: 'Strength Grade' },
-    { key: 'frostResistance', label: 'Frost Resistance' },
-    { key: 'waterAbsorption', label: 'Water Absorption' },
-    { key: 'thermalConductivity', label: 'Thermal Conductivity (W/mK)' },
-    { key: 'radiationQuality', label: 'Radiation Quality' },
-    { key: 'quantityPerPallet', label: 'Qty per Pallet' },
-    { key: 'minimumOrderQuantity', label: 'Min Order Qty' },
-    { key: 'standard', label: 'Standard' },
+    { key: 'color', label: 'Цвет' },
+    { key: 'brickType', label: 'Тип кирпича' },
+    { key: 'sizeLengthMm', label: 'Размер' },
+    { key: 'weightKg', label: 'Вес (кг)' },
+    { key: 'strengthGrade', label: 'Марка прочности' },
+    { key: 'frostResistance', label: 'Морозостойкость' },
+    { key: 'waterAbsorption', label: 'Водопоглощение' },
+    { key: 'thermalConductivity', label: 'Теплопроводность (Вт/мК)' },
+    { key: 'radiationQuality', label: 'Радиационное качество' },
+    { key: 'quantityPerPallet', label: 'Шт. на поддоне' },
+    { key: 'minimumOrderQuantity', label: 'Мин. заказ' },
+    { key: 'standard', label: 'Стандарт' },
   ];
 
   return (
     <Box>
       <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/products')} sx={{ mb: 2 }}>
-        Back to Products
+        Назад к товарам
       </Button>
 
       <Typography variant="h5" sx={{ mb: 3 }}>{product.name}</Typography>
@@ -273,29 +273,29 @@ export default function ProductDetailPage() {
       )}
 
       <Button variant="outlined" size="small" startIcon={<CloudUploadIcon />} onClick={() => setUploadDialogOpen(true)} sx={{ mb: 3 }}>
-        Upload Image
+        Загрузить изображение
       </Button>
 
       <Card sx={{ mb: 4 }}>
         <CardContent>
-          <Typography variant="caption" color="text.secondary">Product ID</Typography>
+          <Typography variant="caption" color="text.secondary">ID товара</Typography>
           <Typography sx={{ fontFamily: 'monospace', mb: 1 }}>{product.id}</Typography>
-          <Typography variant="caption" color="text.secondary">Current Price</Typography>
+          <Typography variant="caption" color="text.secondary">Текущая цена</Typography>
           <Typography variant="h6">
-            {product.price != null ? `${product.price.toFixed(2)}` : 'No price set'}
+            {product.price != null ? `${product.price.toFixed(2)}` : 'Цена не установлена'}
           </Typography>
         </CardContent>
       </Card>
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6">Characteristics</Typography>
+        <Typography variant="h6">Характеристики</Typography>
         <Button variant="outlined" size="small" startIcon={<EditIcon />} onClick={openCharDialog}>
-          {characteristics ? 'Edit' : 'Add'}
+          {characteristics ? 'Редактировать' : 'Добавить'}
         </Button>
       </Box>
 
       {!characteristics ? (
-        <Typography color="text.secondary" sx={{ mb: 4 }}>No characteristics defined.</Typography>
+        <Typography color="text.secondary" sx={{ mb: 4 }}>Характеристики не заданы.</Typography>
       ) : (
         <Card sx={{ mb: 4 }}>
           <CardContent sx={{ py: 1 }}>
@@ -326,21 +326,21 @@ export default function ProductDetailPage() {
       )}
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6">Price History</Typography>
+        <Typography variant="h6">История цен</Typography>
         <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={() => setPriceDialogOpen(true)}>
-          Add Price
+          Добавить цену
         </Button>
       </Box>
 
       {prices.length === 0 ? (
-        <Typography color="text.secondary">No price history.</Typography>
+        <Typography color="text.secondary">История цен отсутствует.</Typography>
       ) : (
         <TableContainer component={Paper}>
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell align="right">Price</TableCell>
+                <TableCell>Дата</TableCell>
+                <TableCell align="right">Цена</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -356,12 +356,12 @@ export default function ProductDetailPage() {
       )}
 
       <Dialog open={priceDialogOpen} onClose={() => setPriceDialogOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle>Add Price</DialogTitle>
+        <DialogTitle>Добавить цену</DialogTitle>
         <DialogContent>
           <TextField
             fullWidth
             autoFocus
-            label="Price"
+            label="Цена"
             type="number"
             value={priceInput}
             onChange={(e) => setPriceInput(e.target.value)}
@@ -370,15 +370,15 @@ export default function ProductDetailPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPriceDialogOpen(false)}>Cancel</Button>
+          <Button onClick={() => setPriceDialogOpen(false)}>Отмена</Button>
           <Button variant="contained" onClick={handleAddPrice} disabled={!priceInput || parseFloat(priceInput) < 0}>
-            Add
+            Добавить
           </Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={uploadDialogOpen} onClose={() => { if (!uploading) { setUploadDialogOpen(false); setUploadFile(null); } }} maxWidth="sm" fullWidth>
-        <DialogTitle>Upload Image</DialogTitle>
+        <DialogTitle>Загрузить изображение</DialogTitle>
         <DialogContent>
           <Box
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -417,37 +417,37 @@ export default function ProductDetailPage() {
             ) : (
               <>
                 <CloudUploadIcon sx={{ fontSize: 48, color: 'grey.500', mb: 1 }} />
-                <Typography>Drag & drop an image here, or click to select</Typography>
+                <Typography>Перетащите изображение сюда или нажмите для выбора</Typography>
               </>
             )}
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => { setUploadDialogOpen(false); setUploadFile(null); }} disabled={uploading}>Cancel</Button>
+          <Button onClick={() => { setUploadDialogOpen(false); setUploadFile(null); }} disabled={uploading}>Отмена</Button>
           <Button variant="contained" onClick={handleUpload} disabled={!uploadFile || uploading}>
-            {uploading ? 'Uploading…' : 'Upload'}
+            {uploading ? 'Загрузка...' : 'Загрузить'}
           </Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={!!deleteTarget} onClose={() => { if (!deleting) setDeleteTarget(null); }} maxWidth="xs" fullWidth>
-        <DialogTitle>Delete Image</DialogTitle>
+        <DialogTitle>Удалить изображение</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to delete this image?</Typography>
+          <Typography>Вы уверены, что хотите удалить это изображение?</Typography>
           {deleteTarget && (
             <Typography variant="caption" color="text.secondary">{deleteTarget.fileName}</Typography>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteTarget(null)} disabled={deleting}>Cancel</Button>
+          <Button onClick={() => setDeleteTarget(null)} disabled={deleting}>Отмена</Button>
           <Button variant="contained" color="error" onClick={handleDeleteConfirm} disabled={deleting}>
-            {deleting ? 'Deleting…' : 'Delete'}
+            {deleting ? 'Удаление...' : 'Удалить'}
           </Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={charDialogOpen} onClose={() => { if (!savingChar) setCharDialogOpen(false); }} maxWidth="sm" fullWidth>
-        <DialogTitle>{characteristics ? 'Edit' : 'Add'} Characteristics</DialogTitle>
+        <DialogTitle>{characteristics ? 'Редактировать' : 'Добавить'} характеристики</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
             {characteristicFields.map((f) => (
@@ -470,9 +470,9 @@ export default function ProductDetailPage() {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCharDialogOpen(false)} disabled={savingChar}>Cancel</Button>
+          <Button onClick={() => setCharDialogOpen(false)} disabled={savingChar}>Отмена</Button>
           <Button variant="contained" onClick={handleCharSave} disabled={savingChar}>
-            {savingChar ? 'Saving…' : 'Save'}
+            {savingChar ? 'Сохранение...' : 'Сохранить'}
           </Button>
         </DialogActions>
       </Dialog>

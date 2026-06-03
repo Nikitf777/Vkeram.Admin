@@ -28,15 +28,15 @@ import SettingsIcon from '@mui/icons-material/Settings';
 const DRAWER_WIDTH = 260;
 
 const navItems = [
-  { label: 'Invites', path: '/invites', icon: <ConfirmationNumberIcon /> },
-  { label: 'Users', path: '/users', icon: <PeopleIcon /> },
-  { label: 'Orders', path: '/orders', icon: <ReceiptIcon /> },
-  { label: 'Reservations', path: '/reservations', icon: <EventNoteIcon /> },
-  { label: 'Calendar', path: '/calendar', icon: <CalendarMonthIcon /> },
-  { label: 'Deliveries', path: '/deliveries', icon: <LocalShippingIcon /> },
-  { label: 'Products', path: '/products', icon: <InventoryIcon /> },
-  { label: 'Buyers', path: '/buyers', icon: <StorefrontIcon /> },
-  { label: 'Settings', path: '/settings', icon: <SettingsIcon /> },
+  { label: 'Приглашения', path: '/invites', icon: <ConfirmationNumberIcon /> },
+  { label: 'Пользователи', path: '/users', icon: <PeopleIcon /> },
+  { label: 'Заказы', path: '/orders', icon: <ReceiptIcon /> },
+  { label: 'Бронирования', path: '/reservations', icon: <EventNoteIcon /> },
+  { label: 'Календарь', path: '/calendar', icon: <CalendarMonthIcon /> },
+  { label: 'Доставки', path: '/deliveries', icon: <LocalShippingIcon /> },
+  { label: 'Товары', path: '/products', icon: <InventoryIcon /> },
+  { label: 'Покупатели', path: '/buyers', icon: <StorefrontIcon /> },
+  { label: 'Настройки', path: '/settings', icon: <SettingsIcon /> },
 ];
 
 export default function Layout() {
@@ -48,7 +48,7 @@ export default function Layout() {
       <Box>
         <Toolbar>
           <Typography variant="h6" noWrap sx={{ fontWeight: 700 }}>
-            Vkeram Admin
+            Vkeram Админ
           </Typography>
         </Toolbar>
       <List>
@@ -79,7 +79,7 @@ export default function Layout() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            {navItems.find((i) => i.path === location.pathname)?.label || 'Vkeram Admin'}
+            {navItems.find((i) => i.path === location.pathname)?.label || 'Vkeram Админ'}
           </Typography>
         </Toolbar>
       </AppBar>

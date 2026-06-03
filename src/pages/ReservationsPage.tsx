@@ -36,11 +36,11 @@ export default function ReservationsPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 3 }}>Reservations</Typography>
+      <Typography variant="h5" sx={{ mb: 3 }}>Бронирования</Typography>
 
       <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
         <TextField
-          label="Min Date"
+          label="Дата от"
           type="date"
           size="small"
           slotProps={{ inputLabel: { shrink: true } }}
@@ -48,7 +48,7 @@ export default function ReservationsPage() {
           onChange={(e) => setMinDate(e.target.value)}
         />
         <TextField
-          label="Max Date"
+          label="Дата до"
           type="date"
           size="small"
           slotProps={{ inputLabel: { shrink: true } }}
@@ -62,12 +62,12 @@ export default function ReservationsPage() {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Day</TableCell>
-              <TableCell>Start</TableCell>
-              <TableCell>End</TableCell>
-              <TableCell>Picked</TableCell>
-              <TableCell>Order ID</TableCell>
-              <TableCell>Confirmed</TableCell>
+              <TableCell>День</TableCell>
+              <TableCell>Начало</TableCell>
+              <TableCell>Конец</TableCell>
+              <TableCell>Собран</TableCell>
+              <TableCell>ID заказа</TableCell>
+              <TableCell>Подтверждён</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -80,7 +80,7 @@ export default function ReservationsPage() {
                 <TableCell>
                   <Chip
                     size="small"
-                    label={r.picked ? 'Yes' : 'No'}
+                    label={r.picked ? 'Да' : 'Нет'}
                     color={r.picked ? 'success' : 'warning'}
                   />
                 </TableCell>
@@ -88,7 +88,7 @@ export default function ReservationsPage() {
                 <TableCell>
                   <Chip
                     size="small"
-                    label={r.isConfirmed ? 'Yes' : 'No'}
+                    label={r.isConfirmed ? 'Да' : 'Нет'}
                     color={r.isConfirmed ? 'success' : 'warning'}
                   />
                 </TableCell>

@@ -40,9 +40,9 @@ export default function BuyersPage() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5">Buyers</Typography>
+        <Typography variant="h5">Покупатели</Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant="body2">Only with registered users</Typography>
+          <Typography variant="body2">Только с зарегистрированными пользователями</Typography>
           <Switch checked={onlyWithUsers} onChange={(e) => setOnlyWithUsers(e.target.checked)} />
         </Box>
       </Box>
@@ -57,8 +57,8 @@ export default function BuyersPage() {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell align="right">Registered Users</TableCell>
+              <TableCell>Название</TableCell>
+              <TableCell align="right">Зарегистрированные пользователи</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

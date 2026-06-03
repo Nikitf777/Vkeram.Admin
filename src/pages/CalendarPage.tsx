@@ -95,7 +95,7 @@ export default function CalendarPage() {
     for (const r of reservations) {
       const key = r.userBuyerId ?? '__unknown__';
       if (!buyerKeys.has(key)) {
-        buyerKeys.set(key, r.userBuyerName ?? r.userBuyerId ?? 'Unknown');
+        buyerKeys.set(key, r.userBuyerName ?? r.userBuyerId ?? 'Неизвестно');
       }
     }
     const sortedKeys = Array.from(buyerKeys.keys()).sort();
@@ -131,10 +131,10 @@ export default function CalendarPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 3 }}>Calendar</Typography>
+      <Typography variant="h5" sx={{ mb: 3 }}>Календарь</Typography>
       <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
         <TextField
-          label="Min Date"
+          label="Дата от"
           type="date"
           size="small"
           slotProps={{ inputLabel: { shrink: true } }}
@@ -142,7 +142,7 @@ export default function CalendarPage() {
           onChange={(e) => setMinDate(e.target.value)}
         />
         <TextField
-          label="Max Date"
+          label="Дата до"
           type="date"
           size="small"
           slotProps={{ inputLabel: { shrink: true } }}
@@ -155,15 +155,15 @@ export default function CalendarPage() {
           {selectedReservation ? (
             <>
               <Typography variant="body1">
-                Order <Link component="button" variant="body1" onClick={() => navigate(`/orders/${selectedReservation.orderId}`)} underline="hover">#{selectedReservation.orderId}</Link>
+                Заказ <Link component="button" variant="body1" onClick={() => navigate(`/orders/${selectedReservation.orderId}`)} underline="hover">#{selectedReservation.orderId}</Link>
                 {' | '}{selectedReservation.day} {formatTime(selectedReservation.startTime)}-{formatTime(selectedReservation.endTime)}
               </Typography>
-              <Chip size="small" label={selectedReservation.isConfirmed ? 'Confirmed' : 'Unconfirmed'} color={selectedReservation.isConfirmed ? 'success' : 'warning'} />
-              <Chip size="small" label={selectedReservation.picked ? 'Picked' : 'Not picked'} color={selectedReservation.picked ? 'info' : 'default'} />
+              <Chip size="small" label={selectedReservation.isConfirmed ? 'Подтверждён' : 'Не подтверждён'} color={selectedReservation.isConfirmed ? 'success' : 'warning'} />
+              <Chip size="small" label={selectedReservation.picked ? 'Собран' : 'Не собран'} color={selectedReservation.picked ? 'info' : 'default'} />
               <Typography variant="body2" color="text.secondary">{selectedReservation.userBuyerName}</Typography>
             </>
           ) : (
-            <Typography variant="body1" color="text.secondary">Select a reservation to view its details</Typography>
+            <Typography variant="body1" color="text.secondary">Выберите бронирование для просмотра деталей</Typography>
           )}
         </Paper>
       </Box>

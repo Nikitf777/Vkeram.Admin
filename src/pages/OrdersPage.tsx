@@ -46,23 +46,23 @@ export default function OrdersPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 3 }}>Orders</Typography>
+      <Typography variant="h5" sx={{ mb: 3 }}>Заказы</Typography>
 
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Company</TableCell>
+              <TableCell>Компания</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Confirmation</TableCell>
-              <TableCell>Payment</TableCell>
-              <TableCell>Shipment</TableCell>
-              <TableCell align="right">Reservations</TableCell>
-              <TableCell align="right">Deliveries</TableCell>
-              <TableCell align="right">Total Qty</TableCell>
-              <TableCell align="right">Total Price</TableCell>
-              <TableCell>Created</TableCell>
+              <TableCell>Подтверждение</TableCell>
+              <TableCell>Оплата</TableCell>
+              <TableCell>Отгрузка</TableCell>
+              <TableCell align="right">Бронирования</TableCell>
+              <TableCell align="right">Доставки</TableCell>
+              <TableCell align="right">Всего кол-во</TableCell>
+              <TableCell align="right">Общая сумма</TableCell>
+              <TableCell>Создан</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -86,7 +86,7 @@ export default function OrdersPage() {
                 </TableCell>
                 <TableCell>{o.userEmail}</TableCell>
                 <TableCell>
-                  <Chip size="small" label={o.isConfirmed ? 'Yes' : 'No'} color={o.isConfirmed ? 'success' : 'warning'} />
+                  <Chip size="small" label={o.isConfirmed ? 'Да' : 'Нет'} color={o.isConfirmed ? 'success' : 'warning'} />
                 </TableCell>
                 <TableCell>
                   <Chip size="small" label={o.paymentStatus} color={statusColor[o.paymentStatus] || 'default'} />
