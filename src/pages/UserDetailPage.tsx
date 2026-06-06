@@ -18,7 +18,7 @@ import {
   Typography,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { fetchUser, fetchUserOrders } from '../api/admin';
+import { fetchUser, fetchUserOrders, translateStatus } from '../api/admin';
 import type { User, Order } from '../api/admin';
 
 const statusColor: Record<string, 'success' | 'warning' | 'error' | 'info' | 'default'> = {
@@ -143,10 +143,10 @@ export default function UserDetailPage() {
                     <Chip size="small" label={o.isConfirmed ? 'Да' : 'Нет'} color={o.isConfirmed ? 'success' : 'warning'} />
                   </TableCell>
                   <TableCell>
-                    <Chip size="small" label={o.paymentStatus} color={statusColor[o.paymentStatus] || 'default'} />
+                    <Chip size="small" label={translateStatus(o.paymentStatus)} color={statusColor[o.paymentStatus] || 'default'} />
                   </TableCell>
                   <TableCell>
-                    <Chip size="small" label={o.shipmentStatus} color={statusColor[o.shipmentStatus] || 'default'} />
+                    <Chip size="small" label={translateStatus(o.shipmentStatus)} color={statusColor[o.shipmentStatus] || 'default'} />
                   </TableCell>
                   <TableCell align="right">{o.reservationsCount}</TableCell>
                   <TableCell align="right">{o.deliveriesCount}</TableCell>

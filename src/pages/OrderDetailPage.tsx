@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { fetchOrderDetail, confirmOrder, updatePaymentStatus, updateReservationStatus, updateDeliveryStatus, type OrderDetail } from '../api/admin'
+import { fetchOrderDetail, confirmOrder, updatePaymentStatus, updateReservationStatus, updateDeliveryStatus, translateStatus, type OrderDetail } from '../api/admin'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
@@ -149,7 +149,7 @@ export default function OrderDetailPage() {
               <MenuItem value="Unpaid">Не оплачен</MenuItem>
             </Select>
           </Box>
-          <Chip label={`Отгрузка: ${order.shipmentStatus}`} color={statusColor[order.shipmentStatus ?? ''] || 'default'} />
+          <Chip label={`Отгрузка: ${translateStatus(order.shipmentStatus)}`} color={statusColor[order.shipmentStatus ?? ''] || 'default'} />
         </Box>
         <Typography variant="body2" color="text.secondary">
             Создан: {order.createdAt ? new Date(order.createdAt).toLocaleString(undefined, { hour12: false }) : '-'}

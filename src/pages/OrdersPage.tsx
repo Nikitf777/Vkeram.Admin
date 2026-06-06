@@ -13,7 +13,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { fetchOrders } from '../api/admin';
+import { fetchOrders, translateStatus } from '../api/admin';
 import type { Order } from '../api/admin';
 
 const statusColor: Record<string, 'success' | 'warning' | 'error' | 'info' | 'default'> = {
@@ -89,10 +89,10 @@ export default function OrdersPage() {
                   <Chip size="small" label={o.isConfirmed ? 'Да' : 'Нет'} color={o.isConfirmed ? 'success' : 'warning'} />
                 </TableCell>
                 <TableCell>
-                  <Chip size="small" label={o.paymentStatus} color={statusColor[o.paymentStatus] || 'default'} />
+                  <Chip size="small" label={translateStatus(o.paymentStatus)} color={statusColor[o.paymentStatus] || 'default'} />
                 </TableCell>
                 <TableCell>
-                  <Chip size="small" label={o.shipmentStatus} color={statusColor[o.shipmentStatus] || 'default'} />
+                  <Chip size="small" label={translateStatus(o.shipmentStatus)} color={statusColor[o.shipmentStatus] || 'default'} />
                 </TableCell>
                 <TableCell align="right">{o.reservationsCount}</TableCell>
                 <TableCell align="right">{o.deliveriesCount}</TableCell>

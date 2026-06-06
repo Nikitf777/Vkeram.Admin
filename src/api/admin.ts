@@ -1,6 +1,28 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const ADMIN_KEY = import.meta.env.VITE_ADMIN_KEY ?? '';
 
+const statusLabels: Record<string, string> = {
+  Paid: 'Оплачен',
+  paid: 'Оплачен',
+  PartiallyPaid: 'Частично оплачен',
+  partiallyPaid: 'Частично оплачен',
+  Unpaid: 'Не оплачен',
+  unpaid: 'Не оплачен',
+  Cancelled: 'Отменён',
+  cancelled: 'Отменён',
+  Shipped: 'Отгружен',
+  shipped: 'Отгружен',
+  PartiallyShipped: 'Частично отгружен',
+  partiallyShipped: 'Частично отгружен',
+  shippedPartially: 'Частично отгружен',
+  Unshipped: 'Не отгружен',
+  unshipped: 'Не отгружен',
+};
+
+export function translateStatus(status: string | null | undefined): string {
+  return status ? (statusLabels[status] ?? status) : '';
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (ADMIN_KEY) headers['X-Admin-Key'] = ADMIN_KEY;
