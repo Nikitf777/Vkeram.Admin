@@ -207,9 +207,13 @@ export async function fetchProduct(id: string): Promise<AdminProduct> {
   return request<AdminProduct>(`/products/${encodeURIComponent(id)}`);
 }
 
-export async function fetchProductPriceHistory(productId: string): Promise<ProductPriceEntry[]> {
+export async function fetchProductPriceHistory(productId: string, from?: string, to?: string): Promise<ProductPriceEntry[]> {
+  const params = new URLSearchParams();
+  if (from) params.set('from', from);
+  if (to) params.set('to', to);
+  const qs = params.toString();
   const data = await request<{ success: boolean; prices: ProductPriceEntry[] }>(
-    `/products/${encodeURIComponent(productId)}/prices`
+    `/products/${encodeURIComponent(productId)}/prices${qs ? `?${qs}` : ''}`
   );
   return data.prices;
 }

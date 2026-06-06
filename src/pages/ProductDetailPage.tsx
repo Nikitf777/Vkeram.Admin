@@ -59,6 +59,16 @@ function characteristicLabel(key: string): string {
   return map[key] ?? key;
 }
 
+function daysAgo(days: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  return d.toISOString().slice(0, 10);
+}
+
+function today(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -78,6 +88,8 @@ export default function ProductDetailPage() {
   const [charDialogOpen, setCharDialogOpen] = useState(false);
   const [savingChar, setSavingChar] = useState(false);
   const [charForm, setCharForm] = useState<SaveProductCharacteristicData>({});
+  const [fromDate, setFromDate] = useState(daysAgo(180));
+  const [toDate, setToDate] = useState(today());
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -85,7 +97,7 @@ export default function ProductDetailPage() {
     try {
       const [productData, priceData, imageData, charData] = await Promise.all([
         fetchProduct(id),
-        fetchProductPriceHistory(id),
+        fetchProductPriceHistory(id, fromDate || undefined, toDate || undefined),
         fetchProductImages(id),
         fetchProductCharacteristics(id).catch(() => null),
       ]);
@@ -98,7 +110,7 @@ export default function ProductDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, fromDate, toDate]);
 
   useEffect(() => {
     load();
@@ -329,6 +341,32 @@ export default function ProductDetailPage() {
         <Typography variant="h6">История цен</Typography>
         <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={() => setPriceDialogOpen(true)}>
           Добавить цену
+        </Button>
+      </Box>
+
+      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <TextField
+          label="Дата от"
+          type="date"
+          size="small"
+          slotProps={{ inputLabel: { shrink: true } }}
+          value={fromDate}
+          onChange={(e) => setFromDate(e.target.value)}
+        />
+        <TextField
+          label="Дата до"
+          type="date"
+          size="small"
+          slotProps={{ inputLabel: { shrink: true } }}
+          value={toDate}
+          onChange={(e) => setToDate(e.target.value)}
+        />
+        <Button
+          variant="text"
+          size="small"
+          onClick={() => { setFromDate(''); setToDate(''); }}
+        >
+          Сбросить
         </Button>
       </Box>
 
