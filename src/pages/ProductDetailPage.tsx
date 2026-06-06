@@ -26,6 +26,13 @@ import AddIcon from '@mui/icons-material/Add';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+} from 'recharts';
 import {
   fetchProduct,
   fetchProductPriceHistory,
@@ -90,6 +97,7 @@ export default function ProductDetailPage() {
   const [charForm, setCharForm] = useState<SaveProductCharacteristicData>({});
   const [fromDate, setFromDate] = useState(daysAgo(180));
   const [toDate, setToDate] = useState(today());
+  const [viewMode, setViewMode] = useState<'table' | 'chart'>('table');
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -339,9 +347,24 @@ export default function ProductDetailPage() {
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h6">История цен</Typography>
-        <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={() => setPriceDialogOpen(true)}>
-          Добавить цену
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <ToggleButtonGroup
+            value={viewMode}
+            exclusive
+            onChange={(_, v) => v && setViewMode(v)}
+            size="small"
+          >
+            <ToggleButton value="table">
+              <TableChartIcon />
+            </ToggleButton>
+            <ToggleButton value="chart">
+              <BarChartIcon />
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={() => setPriceDialogOpen(true)}>
+            Добавить цену
+          </Button>
+        </Box>
       </Box>
 
       <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
@@ -372,6 +395,27 @@ export default function ProductDetailPage() {
 
       {prices.length === 0 ? (
         <Typography color="text.secondary">История цен отсутствует.</Typography>
+      ) : viewMode === 'chart' ? (
+        <Paper sx={{ p: 2 }}>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={[...prices].reverse()}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="createdAt"
+                tickFormatter={(v: string) => new Date(v).toLocaleDateString()}
+              />
+              <YAxis
+                domain={['auto', 'auto']}
+                tickFormatter={(v: number) => v.toFixed(2)}
+              />
+              <Tooltip
+                labelFormatter={(v: any) => new Date(v).toLocaleString(undefined, { hour12: false })}
+                formatter={(value: any) => [Number(value).toFixed(2), 'Цена']}
+              />
+              <Line type="monotone" dataKey="price" stroke="#1976d2" dot={{ r: 3 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </Paper>
       ) : (
         <TableContainer component={Paper}>
           <Table size="small">
