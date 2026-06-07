@@ -74,6 +74,7 @@ export interface Order {
   deliveriesCount: number;
   totalPrice: number;
   totalQuantity: number;
+  productQuantity?: number;
 }
 
 export interface ProductReservationInfo {
@@ -156,6 +157,20 @@ export async function fetchOrders(from?: string, to?: string, isConfirmed?: bool
   if (userId !== undefined) params.set('userId', String(userId));
   const qs = params.toString();
   const data = await request<{ success: boolean; orders: Order[] }>(`/orders${qs ? `?${qs}` : ''}`);
+  return data.orders;
+}
+
+export async function fetchOrdersByProduct(productId: string, from?: string, to?: string, isConfirmed?: boolean, paymentStatus?: string, shipmentStatus?: string, buyerId?: string, userId?: number): Promise<Order[]> {
+  const params = new URLSearchParams();
+  if (from) params.set('from', from);
+  if (to) params.set('to', to);
+  if (isConfirmed !== undefined) params.set('isConfirmed', String(isConfirmed));
+  if (paymentStatus) params.set('paymentStatus', paymentStatus);
+  if (shipmentStatus) params.set('shipmentStatus', shipmentStatus);
+  if (buyerId) params.set('buyerId', buyerId);
+  if (userId !== undefined) params.set('userId', String(userId));
+  const qs = params.toString();
+  const data = await request<{ success: boolean; orders: Order[] }>(`/orders/by-product/${encodeURIComponent(productId)}${qs ? `?${qs}` : ''}`);
   return data.orders;
 }
 

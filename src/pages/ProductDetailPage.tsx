@@ -18,6 +18,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tab,
+  Tabs,
   TextField,
   Typography,
 } from '@mui/material';
@@ -43,8 +45,10 @@ import {
   getImageUrl,
   fetchProductCharacteristics,
   saveProductCharacteristic,
+  fetchOrdersByProduct,
 } from '../api/admin';
 import type { AdminProduct, ProductPriceEntry, ProductImage, ProductCharacteristic, SaveProductCharacteristicData } from '../api/admin';
+import OrdersView from '../components/OrdersView';
 
 function characteristicLabel(key: string): string {
   const map: Record<string, string> = {
@@ -98,6 +102,7 @@ export default function ProductDetailPage() {
   const [fromDate, setFromDate] = useState(daysAgo(180));
   const [toDate, setToDate] = useState(today());
   const [viewMode, setViewMode] = useState<'table' | 'chart'>('table');
+  const [tabValue, setTabValue] = useState(0);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -247,7 +252,15 @@ export default function ProductDetailPage() {
         Назад к товарам
       </Button>
 
-      <Typography variant="h5" sx={{ mb: 3 }}>{product.name}</Typography>
+      <Typography variant="h5" sx={{ mb: 1 }}>{product.name}</Typography>
+
+      <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)} sx={{ mb: 3 }}>
+        <Tab label="О товаре" />
+        <Tab label="Заказы" />
+      </Tabs>
+
+      {tabValue === 0 && (
+        <>
 
       {images.length > 0 && (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mb: 3 }}>
@@ -435,6 +448,11 @@ export default function ProductDetailPage() {
             </TableBody>
           </Table>
         </TableContainer>
+      )}
+
+      </>)}
+      {tabValue === 1 && (
+        <OrdersView fetchFn={(from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, userId) => fetchOrdersByProduct(id!, from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, userId)} showProductQuantity />
       )}
 
       <Dialog open={priceDialogOpen} onClose={() => setPriceDialogOpen(false)} maxWidth="xs" fullWidth>
