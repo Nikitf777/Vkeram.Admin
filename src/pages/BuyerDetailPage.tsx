@@ -55,7 +55,7 @@ export default function BuyerDetailPage() {
       <Typography variant="h5" sx={{ mb: 3 }}>{buyer.name}</Typography>
 
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
-        <Tab label={`Заказы (${buyer.orders.length})`} />
+        <Tab label="Заказы" />
         <Tab label={`Пользователи (${buyer.users.length})`} />
       </Tabs>
 

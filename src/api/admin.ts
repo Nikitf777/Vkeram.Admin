@@ -183,11 +183,6 @@ export async function fetchUser(id: number): Promise<User> {
   return data.user;
 }
 
-export async function fetchUserOrders(userId: number): Promise<Order[]> {
-  const data = await request<{ success: boolean; orders: Order[] }>(`/users/${userId}/orders`);
-  return data.orders;
-}
-
 export interface ProductWithPrice {
   id: string;
   name: string;
@@ -584,25 +579,10 @@ export interface BuyerUser {
   isActive: boolean;
 }
 
-export interface BuyerOrder {
-  id: number;
-  userId?: number;
-  userName: string;
-  isConfirmed: boolean;
-  paymentStatus: string;
-  shipmentStatus: string;
-  createdAt: string;
-  reservationsCount: number;
-  deliveriesCount: number;
-  totalPrice: number;
-  totalQuantity: number;
-}
-
 export interface BuyerDetail {
   id: string;
   name: string;
   users: BuyerUser[];
-  orders: BuyerOrder[];
 }
 
 const buyersRequest = async <T>(path: string, options?: RequestInit): Promise<T> => {
