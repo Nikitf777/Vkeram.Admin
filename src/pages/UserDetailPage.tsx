@@ -8,49 +8,24 @@ import {
   Chip,
   CircularProgress,
   Link,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Typography,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { fetchUser, fetchUserOrders, translateStatus } from '../api/admin';
-import type { User, Order } from '../api/admin';
-
-const statusColor: Record<string, 'success' | 'warning' | 'error' | 'info' | 'default'> = {
-  Confirmed: 'success',
-  Unconfirmed: 'warning',
-  Cancelled: 'error',
-  Paid: 'success',
-  PartiallyPaid: 'info',
-  Unpaid: 'warning',
-  Shipped: 'success',
-  PartiallyShipped: 'info',
-  Unshipped: 'warning',
-};
+import { fetchUser, fetchOrders } from '../api/admin';
+import type { User } from '../api/admin';
+import OrdersView from '../components/OrdersView';
 
 export default function UserDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
-  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     try {
-      const uid = Number(id);
-      const [userData, ordersData] = await Promise.all([
-        fetchUser(uid),
-        fetchUserOrders(uid),
-      ]);
-      setUser(userData);
-      setOrders(ordersData);
+      setUser(await fetchUser(Number(id)));
     } catch {
       /* ignore */
     } finally {
@@ -110,55 +85,14 @@ export default function UserDetailPage() {
         </CardContent>
       </Card>
 
-      <Typography variant="h6" sx={{ mb: 2 }}>Заказы ({orders.length})</Typography>
-
-      {orders.length === 0 ? (
-        <Typography color="text.secondary">Заказов пока нет.</Typography>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Подтверждение</TableCell>
-                <TableCell>Оплата</TableCell>
-                <TableCell>Отгрузка</TableCell>
-                <TableCell align="right">Бронирования</TableCell>
-                <TableCell align="right">Доставки</TableCell>
-                <TableCell align="right">Всего кол-во</TableCell>
-                <TableCell align="right">Общая сумма</TableCell>
-                <TableCell>Создан</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {orders.map((o) => (
-                <TableRow
-                  key={o.id}
-                  hover
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => navigate(`/orders/${o.id}`)}
-                >
-                  <TableCell>{o.id}</TableCell>
-                  <TableCell>
-                    <Chip size="small" label={o.isConfirmed ? 'Да' : 'Нет'} color={o.isConfirmed ? 'success' : 'warning'} />
-                  </TableCell>
-                  <TableCell>
-                    <Chip size="small" label={translateStatus(o.paymentStatus)} color={statusColor[o.paymentStatus] || 'default'} />
-                  </TableCell>
-                  <TableCell>
-                    <Chip size="small" label={translateStatus(o.shipmentStatus)} color={statusColor[o.shipmentStatus] || 'default'} />
-                  </TableCell>
-                  <TableCell align="right">{o.reservationsCount}</TableCell>
-                  <TableCell align="right">{o.deliveriesCount}</TableCell>
-                  <TableCell align="right">{o.totalQuantity}</TableCell>
-                  <TableCell align="right">{o.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
-                  <TableCell>{new Date(o.createdAt).toLocaleDateString()}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+      <Typography variant="h6" sx={{ mb: 2 }}>Заказы</Typography>
+      <OrdersView
+        fetchFn={(from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId) =>
+          fetchOrders(from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, Number(id))
+        }
+        hideUserColumn
+        hideUserFilter
+      />
     </Box>
   );
 }

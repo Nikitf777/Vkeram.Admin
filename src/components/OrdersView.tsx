@@ -44,9 +44,13 @@ const statusColor: Record<string, 'success' | 'warning' | 'error' | 'info' | 'de
 interface OrdersViewProps {
   fetchFn: (from?: string, to?: string, isConfirmed?: boolean, paymentStatus?: string, shipmentStatus?: string, buyerId?: string, userId?: number) => Promise<Order[]>;
   showProductQuantity?: boolean;
+  hideBuyerColumn?: boolean;
+  hideUserColumn?: boolean;
+  hideBuyerFilter?: boolean;
+  hideUserFilter?: boolean;
 }
 
-export default function OrdersView({ fetchFn, showProductQuantity }: OrdersViewProps) {
+export default function OrdersView({ fetchFn, showProductQuantity, hideBuyerColumn, hideUserColumn, hideBuyerFilter, hideUserFilter }: OrdersViewProps) {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [fromDate, setFromDate] = useState('');
@@ -159,32 +163,36 @@ export default function OrdersView({ fetchFn, showProductQuantity }: OrdersViewP
             <MenuItem value="Unshipped">Не отгружено</MenuItem>
           </Select>
         </FormControl>
-        <FormControl size="small" sx={{ minWidth: 200 }}>
-          <InputLabel>Покупатель</InputLabel>
-          <Select
-            value={buyerIdFilter}
-            label="Покупатель"
-            onChange={(e) => setBuyerIdFilter(e.target.value)}
-          >
-            <MenuItem value="">Все</MenuItem>
-            {buyers.map((b) => (
-              <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl size="small" sx={{ minWidth: 200 }}>
-          <InputLabel>Пользователь</InputLabel>
-          <Select
-            value={userIdFilter}
-            label="Пользователь"
-            onChange={(e) => setUserIdFilter(e.target.value)}
-          >
-            <MenuItem value="">Все</MenuItem>
-            {users.map((u) => (
-              <MenuItem key={u.id} value={u.id}>{u.contactName}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        {!hideBuyerFilter && (
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel>Покупатель</InputLabel>
+            <Select
+              value={buyerIdFilter}
+              label="Покупатель"
+              onChange={(e) => setBuyerIdFilter(e.target.value)}
+            >
+              <MenuItem value="">Все</MenuItem>
+              {buyers.map((b) => (
+                <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+        {!hideUserFilter && (
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel>Пользователь</InputLabel>
+            <Select
+              value={userIdFilter}
+              label="Пользователь"
+              onChange={(e) => setUserIdFilter(e.target.value)}
+            >
+              <MenuItem value="">Все</MenuItem>
+              {users.map((u) => (
+                <MenuItem key={u.id} value={u.id}>{u.contactName}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
         <Button
           variant="text"
           size="small"
@@ -266,8 +274,8 @@ export default function OrdersView({ fetchFn, showProductQuantity }: OrdersViewP
             <TableHead>
               <TableRow>
                 <TableCell>ID</TableCell>
-                <TableCell>Компания</TableCell>
-                <TableCell>Пользователь</TableCell>
+                {!hideBuyerColumn && <TableCell>Компания</TableCell>}
+                {!hideUserColumn && <TableCell>Пользователь</TableCell>}
                 <TableCell>Подтверждение</TableCell>
                 <TableCell>Оплата</TableCell>
                 <TableCell>Отгрузка</TableCell>
@@ -288,26 +296,30 @@ export default function OrdersView({ fetchFn, showProductQuantity }: OrdersViewP
                   onClick={() => navigate(`/orders/${o.id}`)}
                 >
                   <TableCell>{o.id}</TableCell>
-                  <TableCell>
-                    <Link
-                      component="button"
-                      variant="body2"
-                      onClick={(e) => { e.stopPropagation(); navigate(`/buyers/${o.userBuyerId}`); }}
-                      underline="hover"
-                    >
-                      {o.userBuyerName}
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    <Link
-                      component="button"
-                      variant="body2"
-                      onClick={(e) => { e.stopPropagation(); navigate(`/users/${o.userId}`); }}
-                      underline="hover"
-                    >
-                      {o.userContactName}
-                    </Link>
-                  </TableCell>
+                  {!hideBuyerColumn && (
+                    <TableCell>
+                      <Link
+                        component="button"
+                        variant="body2"
+                        onClick={(e) => { e.stopPropagation(); navigate(`/buyers/${o.userBuyerId}`); }}
+                        underline="hover"
+                      >
+                        {o.userBuyerName}
+                      </Link>
+                    </TableCell>
+                  )}
+                  {!hideUserColumn && (
+                    <TableCell>
+                      <Link
+                        component="button"
+                        variant="body2"
+                        onClick={(e) => { e.stopPropagation(); navigate(`/users/${o.userId}`); }}
+                        underline="hover"
+                      >
+                        {o.userContactName}
+                      </Link>
+                    </TableCell>
+                  )}
                   <TableCell>
                     <Chip size="small" label={o.isConfirmed ? 'Да' : 'Нет'} color={o.isConfirmed ? 'success' : 'warning'} />
                   </TableCell>

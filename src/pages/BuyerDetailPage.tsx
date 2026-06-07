@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
   Chip,
   CircularProgress,
-  Link,
   Paper,
   Tab,
   Table,
@@ -18,19 +17,8 @@ import {
   Typography,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { fetchBuyerDetail, translateStatus, type BuyerDetail } from '../api/admin';
-
-const statusColor: Record<string, 'success' | 'warning' | 'error' | 'info' | 'default'> = {
-  Confirmed: 'success',
-  Unconfirmed: 'warning',
-  Cancelled: 'error',
-  Paid: 'success',
-  PartiallyPaid: 'info',
-  Unpaid: 'warning',
-  Shipped: 'success',
-  PartiallyShipped: 'info',
-  Unshipped: 'warning',
-};
+import { fetchBuyerDetail, fetchOrders, type BuyerDetail } from '../api/admin';
+import OrdersView from '../components/OrdersView';
 
 export default function BuyerDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -72,63 +60,13 @@ export default function BuyerDetailPage() {
       </Tabs>
 
       {tab === 0 && (
-        buyer.orders.length === 0 ? (
-          <Typography color="text.secondary">Заказов пока нет.</Typography>
-        ) : (
-          <TableContainer component={Paper}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Пользователь</TableCell>
-                  <TableCell>Подтверждение</TableCell>
-                  <TableCell>Оплата</TableCell>
-                  <TableCell>Отгрузка</TableCell>
-                  <TableCell align="right">Бронирования</TableCell>
-                  <TableCell align="right">Доставки</TableCell>
-                  <TableCell align="right">Всего кол-во</TableCell>
-                  <TableCell align="right">Общая сумма</TableCell>
-                  <TableCell>Создан</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {buyer.orders.map((o) => (
-                  <TableRow
-                    key={o.id}
-                    hover
-                    sx={{ cursor: 'pointer' }}
-                    onClick={() => navigate(`/orders/${o.id}`)}
-                  >
-                    <TableCell>{o.id}</TableCell>
-                    <TableCell>
-                      {o.userId != null ? (
-                        <Link component={RouterLink} to={`/users/${o.userId}`} underline="hover" onClick={(e) => e.stopPropagation()}>
-                          {o.userName}
-                        </Link>
-                      ) : (
-                        o.userName
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Chip size="small" label={o.isConfirmed ? 'Да' : 'Нет'} color={o.isConfirmed ? 'success' : 'warning'} />
-                    </TableCell>
-                    <TableCell>
-                      <Chip size="small" label={translateStatus(o.paymentStatus)} color={statusColor[o.paymentStatus] || 'default'} />
-                    </TableCell>
-                    <TableCell>
-                      <Chip size="small" label={translateStatus(o.shipmentStatus)} color={statusColor[o.shipmentStatus] || 'default'} />
-                    </TableCell>
-                    <TableCell align="right">{o.reservationsCount}</TableCell>
-                    <TableCell align="right">{o.deliveriesCount}</TableCell>
-                    <TableCell align="right">{o.totalQuantity}</TableCell>
-                    <TableCell align="right">{o.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
-                    <TableCell>{new Date(o.createdAt).toLocaleDateString()}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )
+        <OrdersView
+          fetchFn={(from, to, isConfirmed, paymentStatus, shipmentStatus, _buyerId, userId) =>
+            fetchOrders(from, to, isConfirmed, paymentStatus, shipmentStatus, id, userId)
+          }
+          hideBuyerColumn
+          hideBuyerFilter
+        />
       )}
 
       {tab === 1 && (
