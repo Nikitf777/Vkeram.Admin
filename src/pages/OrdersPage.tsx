@@ -17,8 +17,15 @@ import {
   TableHead,
   TableRow,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from '@mui/material';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import {
+  ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+} from 'recharts';
 import { fetchOrders, fetchBuyers, fetchUsers, translateStatus } from '../api/admin';
 import type { Order, Buyer, User } from '../api/admin';
 
@@ -46,6 +53,8 @@ export default function OrdersPage() {
   const [userIdFilter, setUserIdFilter] = useState('');
   const [buyers, setBuyers] = useState<Buyer[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [viewMode, setViewMode] = useState<'table' | 'chart'>('table');
+  const [chartMetric, setChartMetric] = useState<'totalPrice' | 'totalQuantity'>('totalPrice');
 
   useEffect(() => {
     fetchBuyers().then(setBuyers).catch(() => {});
@@ -74,7 +83,22 @@ export default function OrdersPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 3 }}>Заказы</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h5">Заказы</Typography>
+        <ToggleButtonGroup
+          value={viewMode}
+          exclusive
+          onChange={(_, v) => v && setViewMode(v)}
+          size="small"
+        >
+          <ToggleButton value="table">
+            <TableChartIcon />
+          </ToggleButton>
+          <ToggleButton value="chart">
+            <BarChartIcon />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
 
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
         <TextField
@@ -174,8 +198,67 @@ export default function OrdersPage() {
         </Button>
       </Box>
 
-      <TableContainer component={Paper}>
-        <Table size="small">
+      {viewMode === 'chart' && orders.length > 0 && (
+        <Box sx={{ mb: 2 }}>
+          <FormControl size="small" sx={{ minWidth: 160, mb: 2 }}>
+            <InputLabel>Показатель</InputLabel>
+            <Select
+              value={chartMetric}
+              label="Показатель"
+              onChange={(e) => setChartMetric(e.target.value as 'totalPrice' | 'totalQuantity')}
+            >
+              <MenuItem value="totalPrice">Общая сумма</MenuItem>
+              <MenuItem value="totalQuantity">Общее кол-во</MenuItem>
+            </Select>
+          </FormControl>
+          <Paper sx={{ p: 2 }}>
+            <ResponsiveContainer width="100%" height={400}>
+              <ScatterChart>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="createdAt"
+                  name="Дата"
+                  tickFormatter={(v: any) => new Date(v).toLocaleDateString()}
+                  type="category"
+                />
+                <YAxis
+                  dataKey={chartMetric}
+                  name={chartMetric === 'totalPrice' ? 'Сумма' : 'Кол-во'}
+                  tickFormatter={(v: any) => chartMetric === 'totalPrice' ? v.toLocaleString() : v}
+                />
+                <Tooltip
+                  content={({ active, payload }: any) => {
+                    if (!active || !payload?.length) return null;
+                    const d = payload[0].payload;
+                    return (
+                      <Paper sx={{ p: 1.5 }}>
+                        <Typography variant="body2">
+                          {new Date(d.createdAt).toLocaleString(undefined, { hour12: false })}
+                        </Typography>
+                        <Typography variant="body2" color="primary">
+                          {chartMetric === 'totalPrice'
+                            ? `Сумма: ${d.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`
+                            : `Кол-во: ${d.totalQuantity}`}
+                        </Typography>
+                      </Paper>
+                    );
+                  }}
+                />
+                <Scatter
+                  data={[...orders].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())}
+                  fill="#1976d2"
+                  cursor="pointer"
+                  onClick={(data: any) => navigate(`/orders/${data.id}`)}
+                />
+              </ScatterChart>
+            </ResponsiveContainer>
+          </Paper>
+        </Box>
+      )}
+
+      {viewMode === 'table' && (
+        <TableContainer component={Paper}>
+          <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
@@ -239,6 +322,8 @@ export default function OrdersPage() {
           </TableBody>
         </Table>
       </TableContainer>
+      )}
+
     </Box>
   );
 }
