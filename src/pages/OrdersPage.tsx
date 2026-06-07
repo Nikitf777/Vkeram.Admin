@@ -54,7 +54,7 @@ export default function OrdersPage() {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Компания</TableCell>
-              <TableCell>Email</TableCell>
+              <TableCell>Пользователь</TableCell>
               <TableCell>Подтверждение</TableCell>
               <TableCell>Оплата</TableCell>
               <TableCell>Отгрузка</TableCell>
@@ -84,7 +84,16 @@ export default function OrdersPage() {
                     {o.userBuyerName}
                   </Link>
                 </TableCell>
-                <TableCell>{o.userEmail}</TableCell>
+                <TableCell>
+                  <Link
+                    component="button"
+                    variant="body2"
+                    onClick={(e) => { e.stopPropagation(); navigate(`/users/${o.userId}`); }}
+                    underline="hover"
+                  >
+                    {o.userContactName}
+                  </Link>
+                </TableCell>
                 <TableCell>
                   <Chip size="small" label={o.isConfirmed ? 'Да' : 'Нет'} color={o.isConfirmed ? 'success' : 'warning'} />
                 </TableCell>

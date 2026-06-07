@@ -62,10 +62,10 @@ export interface User {
 
 export interface Order {
   id: number;
-  userCompany: string;
+  userId: number;
   userBuyerId: string;
   userBuyerName: string;
-  userEmail: string;
+  userContactName: string;
   isConfirmed: boolean;
   paymentStatus: string;
   shipmentStatus: string;
