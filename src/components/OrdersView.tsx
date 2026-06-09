@@ -70,8 +70,8 @@ export default function OrdersView({ fetchFn, fetchAggregationFn, showProductQua
   const [groupBy, setGroupBy] = useState('month');
 
   useEffect(() => {
-    fetchBuyers().then(setBuyers).catch(() => {});
-    fetchUsers().then(setUsers).catch(() => {});
+    fetchBuyers().then(setBuyers).catch(() => { });
+    fetchUsers().then(setUsers).catch(() => { });
   }, []);
 
   const load = useCallback(async () => {
@@ -290,7 +290,7 @@ export default function OrdersView({ fetchFn, fetchAggregationFn, showProductQua
                           <Typography variant="body2">Период: {d.period}</Typography>
                           <Typography variant="body2" color="primary">
                             {chartMetric === 'totalPrice'
-                              ? `Сумма: ${d.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`
+                              ? `Сумма: ${d.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'BYN' })}`
                               : `Кол-во: ${d.totalQuantity}`}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
@@ -351,7 +351,7 @@ export default function OrdersView({ fetchFn, fetchAggregationFn, showProductQua
                         </Typography>
                         <Typography variant="body2" color="primary">
                           {chartMetric === 'totalPrice'
-                            ? `Сумма: ${d.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`
+                            ? `Сумма: ${d.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'BYN' })}`
                             : `Кол-во: ${d.totalQuantity}`}
                         </Typography>
                       </Paper>
@@ -437,7 +437,7 @@ export default function OrdersView({ fetchFn, fetchAggregationFn, showProductQua
                   <TableCell align="right">{o.reservationsCount}</TableCell>
                   <TableCell align="right">{o.deliveriesCount}</TableCell>
                   <TableCell align="right">{o.totalQuantity}</TableCell>
-                  <TableCell align="right">{o.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
+                  <TableCell align="right">{o.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'BYN' })}</TableCell>
                   <TableCell>{new Date(o.createdAt).toLocaleDateString()}</TableCell>
                 </TableRow>
               ))}

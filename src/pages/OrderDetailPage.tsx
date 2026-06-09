@@ -152,13 +152,13 @@ export default function OrderDetailPage() {
           <Chip label={`Отгрузка: ${translateStatus(order.shipmentStatus)}`} color={statusColor[order.shipmentStatus ?? ''] || 'default'} />
         </Box>
         <Typography variant="body2" color="text.secondary">
-            Создан: {order.createdAt ? new Date(order.createdAt).toLocaleString(undefined, { hour12: false }) : '-'}
+          Создан: {order.createdAt ? new Date(order.createdAt).toLocaleString(undefined, { hour12: false }) : '-'}
         </Typography>
         <Typography variant="body2">
           ID пользователя: {order.userId}
         </Typography>
         <Typography variant="body2">
-          Итого: {order.totalQuantity} товаров на {order.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} (вкл. НДС)
+          Итого: {order.totalQuantity} товаров на {order.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'BYN' })} (вкл. НДС)
         </Typography>
       </Paper>
 
@@ -169,7 +169,7 @@ export default function OrderDetailPage() {
             <Box key={i} sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                 <Typography variant="subtitle2">
-                    Слот {i + 1}: {new Date(r.startTime).toLocaleString(undefined, { hour12: false })} - {new Date(r.endTime).toLocaleString(undefined, { hour12: false })}
+                  Слот {i + 1}: {new Date(r.startTime).toLocaleString(undefined, { hour12: false })} - {new Date(r.endTime).toLocaleString(undefined, { hour12: false })}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                   <Chip
@@ -191,11 +191,11 @@ export default function OrderDetailPage() {
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                         <TableCell>Товар</TableCell>
-                         <TableCell align="right">Кол-во</TableCell>
-                         <TableCell align="right">НДС</TableCell>
-                         <TableCell align="right">Цена</TableCell>
-                         <TableCell align="right">Итого</TableCell>
+                        <TableCell>Товар</TableCell>
+                        <TableCell align="right">Кол-во</TableCell>
+                        <TableCell align="right">НДС</TableCell>
+                        <TableCell align="right">Цена</TableCell>
+                        <TableCell align="right">Итого</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -204,8 +204,8 @@ export default function OrderDetailPage() {
                           <TableCell>{p.productName}</TableCell>
                           <TableCell align="right">{p.quantity}</TableCell>
                           <TableCell align="right">{p.vat > 0 ? `${p.vat}%` : '-'}</TableCell>
-                          <TableCell align="right">{p.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
-                          <TableCell align="right">{p.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
+                          <TableCell align="right">{p.price.toLocaleString('en-US', { style: 'currency', currency: 'BYN' })}</TableCell>
+                          <TableCell align="right">{p.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'BYN' })}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -246,11 +246,11 @@ export default function OrderDetailPage() {
                   <Table size="small">
                     <TableHead>
                       <TableRow>
-                         <TableCell>Товар</TableCell>
-                         <TableCell align="right">Кол-во</TableCell>
-                         <TableCell align="right">НДС</TableCell>
-                         <TableCell align="right">Цена</TableCell>
-                         <TableCell align="right">Итого</TableCell>
+                        <TableCell>Товар</TableCell>
+                        <TableCell align="right">Кол-во</TableCell>
+                        <TableCell align="right">НДС</TableCell>
+                        <TableCell align="right">Цена</TableCell>
+                        <TableCell align="right">Итого</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -259,8 +259,8 @@ export default function OrderDetailPage() {
                           <TableCell>{p.productName}</TableCell>
                           <TableCell align="right">{p.quantity}</TableCell>
                           <TableCell align="right">{p.vat > 0 ? `${p.vat}%` : '-'}</TableCell>
-                          <TableCell align="right">{p.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
-                          <TableCell align="right">{p.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
+                          <TableCell align="right">{p.price.toLocaleString('en-US', { style: 'currency', currency: 'BYN' })}</TableCell>
+                          <TableCell align="right">{p.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'BYN' })}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
