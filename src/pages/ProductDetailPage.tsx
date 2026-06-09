@@ -46,6 +46,7 @@ import {
   fetchProductCharacteristics,
   saveProductCharacteristic,
   fetchOrdersByProduct,
+  fetchOrderAggregateByProduct,
 } from '../api/admin';
 import type { AdminProduct, ProductPriceEntry, ProductImage, ProductCharacteristic, SaveProductCharacteristicData } from '../api/admin';
 import OrdersView from '../components/OrdersView';
@@ -452,7 +453,11 @@ export default function ProductDetailPage() {
 
       </>)}
       {tabValue === 1 && (
-        <OrdersView fetchFn={(from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, userId) => fetchOrdersByProduct(id!, from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, userId)} showProductQuantity />
+        <OrdersView
+          fetchFn={(from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, userId) => fetchOrdersByProduct(id!, from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, userId)}
+          fetchAggregationFn={(groupBy, days, from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, userId) => fetchOrderAggregateByProduct(id!, groupBy, days, from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, userId)}
+          showProductQuantity
+        />
       )}
 
       <Dialog open={priceDialogOpen} onClose={() => setPriceDialogOpen(false)} maxWidth="xs" fullWidth>

@@ -77,6 +77,13 @@ export interface Order {
   productQuantity?: number;
 }
 
+export interface AggregationItem {
+  period: string;
+  totalQuantity: number;
+  totalPrice: number;
+  orderCount: number;
+}
+
 export interface ProductReservationInfo {
   productId: string;
   productName: string;
@@ -172,6 +179,34 @@ export async function fetchOrdersByProduct(productId: string, from?: string, to?
   const qs = params.toString();
   const data = await request<{ success: boolean; orders: Order[] }>(`/orders/by-product/${encodeURIComponent(productId)}${qs ? `?${qs}` : ''}`);
   return data.orders;
+}
+
+async function fetchAggregation(path: string, groupBy: string, days?: number, from?: string, to?: string, isConfirmed?: boolean, paymentStatus?: string, shipmentStatus?: string, buyerId?: string, userId?: number): Promise<AggregationItem[]> {
+  const params = new URLSearchParams();
+  params.set('groupBy', groupBy);
+  if (days !== undefined) params.set('days', String(days));
+  if (from) params.set('from', from);
+  if (to) params.set('to', to);
+  if (isConfirmed !== undefined) params.set('isConfirmed', String(isConfirmed));
+  if (paymentStatus) params.set('paymentStatus', paymentStatus);
+  if (shipmentStatus) params.set('shipmentStatus', shipmentStatus);
+  if (buyerId) params.set('buyerId', buyerId);
+  if (userId !== undefined) params.set('userId', String(userId));
+  const qs = params.toString();
+  const data = await request<{ success: boolean; aggregation: AggregationItem[] }>(`${path}${qs ? `?${qs}` : ''}`);
+  return data.aggregation;
+}
+
+export function fetchOrderAggregateAll(groupBy: string, days?: number, from?: string, to?: string, isConfirmed?: boolean, paymentStatus?: string, shipmentStatus?: string, buyerId?: string, userId?: number): Promise<AggregationItem[]> {
+  return fetchAggregation('/orders/aggregate/all', groupBy, days, from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, userId);
+}
+
+export function fetchOrderAggregateByProduct(productId: string, groupBy: string, days?: number, from?: string, to?: string, isConfirmed?: boolean, paymentStatus?: string, shipmentStatus?: string, buyerId?: string, userId?: number): Promise<AggregationItem[]> {
+  return fetchAggregation(`/orders/aggregate/by-product/${encodeURIComponent(productId)}`, groupBy, days, from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, userId);
+}
+
+export function fetchOrderAggregateByBuyer(buyerId: string, groupBy: string, days?: number, from?: string, to?: string, isConfirmed?: boolean, paymentStatus?: string, shipmentStatus?: string, userId?: number): Promise<AggregationItem[]> {
+  return fetchAggregation(`/orders/aggregate/by-buyer/${encodeURIComponent(buyerId)}`, groupBy, days, from, to, isConfirmed, paymentStatus, shipmentStatus, undefined, userId);
 }
 
 export async function fetchOrderDetail(orderId: number): Promise<OrderDetail> {

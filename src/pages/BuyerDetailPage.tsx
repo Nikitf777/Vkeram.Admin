@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { fetchBuyerDetail, fetchOrders, type BuyerDetail } from '../api/admin';
+import { fetchBuyerDetail, fetchOrders, fetchOrderAggregateByBuyer, type BuyerDetail } from '../api/admin';
 import OrdersView from '../components/OrdersView';
 
 export default function BuyerDetailPage() {
@@ -63,6 +63,9 @@ export default function BuyerDetailPage() {
         <OrdersView
           fetchFn={(from, to, isConfirmed, paymentStatus, shipmentStatus, _buyerId, userId) =>
             fetchOrders(from, to, isConfirmed, paymentStatus, shipmentStatus, id, userId)
+          }
+          fetchAggregationFn={(groupBy, days, from, to, isConfirmed, paymentStatus, shipmentStatus, _buyerId, userId) =>
+            fetchOrderAggregateByBuyer(id!, groupBy, days, from, to, isConfirmed, paymentStatus, shipmentStatus, userId)
           }
           hideBuyerColumn
           hideBuyerFilter
