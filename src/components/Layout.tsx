@@ -45,12 +45,12 @@ export default function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const drawer = (
-      <Box>
-        <Toolbar>
-          <Typography variant="h6" noWrap sx={{ fontWeight: 700 }}>
-            Vkeram Админ
-          </Typography>
-        </Toolbar>
+    <Box>
+      <Toolbar>
+        <Typography variant="h6" noWrap sx={{ fontWeight: 700 }}>
+          ОАО «Керамика»
+        </Typography>
+      </Toolbar>
       <List>
         {navItems.map((item) => (
           <ListItem key={item.path} disablePadding>
@@ -79,7 +79,7 @@ export default function Layout() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            {navItems.find((i) => i.path === location.pathname)?.label || 'Vkeram Админ'}
+            {navItems.find((i) => i.path === location.pathname)?.label || 'ОАО «Керамика»'}
           </Typography>
         </Toolbar>
       </AppBar>
