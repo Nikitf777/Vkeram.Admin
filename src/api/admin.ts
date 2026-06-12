@@ -599,6 +599,47 @@ export async function updateDeliveryStatus(deliveryId: number, status: boolean):
   });
 }
 
+export interface AggregatePerProductItem {
+  productId: string;
+  totalQuantity: number;
+  totalPrice: number;
+}
+
+export interface AggregatePerBuyerItem {
+  buyerId: string;
+  buyerName: string;
+  totalQuantity: number;
+  totalPrice: number;
+}
+
+export interface AggregatePeriod<T> {
+  period: string;
+  items: T[];
+}
+
+function fetchAggregatePer<T>(path: string, groupBy: string, days?: number, from?: string, to?: string, isConfirmed?: boolean, paymentStatus?: string, shipmentStatus?: string, buyerId?: string, userId?: number): Promise<AggregatePeriod<T>[]> {
+  const params = new URLSearchParams();
+  params.set('groupBy', groupBy);
+  if (days !== undefined) params.set('days', String(days));
+  if (from) params.set('from', from);
+  if (to) params.set('to', to);
+  if (isConfirmed !== undefined) params.set('isConfirmed', String(isConfirmed));
+  if (paymentStatus) params.set('paymentStatus', paymentStatus);
+  if (shipmentStatus) params.set('shipmentStatus', shipmentStatus);
+  if (buyerId) params.set('buyerId', buyerId);
+  if (userId !== undefined) params.set('userId', String(userId));
+  const qs = params.toString();
+  return request<{ success: boolean; aggregation: AggregatePeriod<T>[] }>(`${path}${qs ? `?${qs}` : ''}`).then(d => d.aggregation);
+}
+
+export function fetchOrderAggregatePerProduct(groupBy: string, days?: number, from?: string, to?: string, isConfirmed?: boolean, paymentStatus?: string, shipmentStatus?: string, buyerId?: string, userId?: number): Promise<AggregatePeriod<AggregatePerProductItem>[]> {
+  return fetchAggregatePer<AggregatePerProductItem>('/orders/aggregate/per-product', groupBy, days, from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, userId);
+}
+
+export function fetchOrderAggregatePerBuyer(groupBy: string, days?: number, from?: string, to?: string, isConfirmed?: boolean, paymentStatus?: string, shipmentStatus?: string, buyerId?: string, userId?: number): Promise<AggregatePeriod<AggregatePerBuyerItem>[]> {
+  return fetchAggregatePer<AggregatePerBuyerItem>('/orders/aggregate/per-buyer', groupBy, days, from, to, isConfirmed, paymentStatus, shipmentStatus, buyerId, userId);
+}
+
 export interface Buyer {
   id: string;
   name: string;
